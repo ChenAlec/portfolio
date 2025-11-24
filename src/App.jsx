@@ -1,5 +1,16 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Github, Linkedin, Mail, FileText, Box, Cpu, PenTool, X, ChevronRight, Menu, ArrowLeft, ExternalLink } from 'lucide-react';
+import { Github, Linkedin, Mail, FileText, Box, Cpu, PenTool, X, ChevronRight, Menu, ArrowLeft, ExternalLink, Check } from 'lucide-react';
+
+/**
+ * UTILITY: Helper to resolve image paths for GitHub Pages
+ * This ensures paths are relative so they work in subdirectories (like /repo-name/)
+ */
+const resolvePath = (path) => {
+    if (!path) return undefined;
+    if (path.startsWith('http')) return path;
+    // Removes leading slash to make path relative to the current URL (the repo root)
+    return path.startsWith('/') ? path.slice(1) : path;
+};
 
 /**
  * UTILITY: Script Loader for Three.js
@@ -143,7 +154,6 @@ const ThreeCanvas = () => {
 
 /**
  * DATA: Portfolio Projects
- * UPDATED: 'what', 'how', 'outcome' are now ARRAYS of strings for bullet points.
  */
 const projects = [
     {
@@ -250,9 +260,9 @@ const projects = [
         tags: ['KiCad', 'PCB Design', 'Firmware', 'Product Design'],
         icon: <PenTool className="w-6 h-6" />,
         images: [
-            '/public/images/macro/macro3.jpg',
-            '/public/images/macro/macro2.jpg',
-            '/public/images/macro/macro1.png'
+            '/images/macro/macro3.jpg',
+            '/images/macro/macro2.jpg',
+            '/images/macro/macro1.png'
         ]
     },
     {
@@ -368,6 +378,7 @@ const App = () => {
   const [activeSection, setActiveSection] = useState('home');
   const [selectedProject, setSelectedProject] = useState(null); // New state for project details
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [emailCopied, setEmailCopied] = useState(false);
 
   const engineeringProjects = projects.filter(p => p.category === 'Engineering');
   const creativeProjects = projects.filter(p => p.category === 'Creative');
@@ -377,6 +388,26 @@ const App = () => {
     setSelectedProject(null); // Reset selection when navigating via menu
     setIsMobileMenuOpen(false);
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleCopyEmail = () => {
+    const email = "thealec.chen@mail.utoronto.ca";
+    
+    // Create temporary textarea to handle copy command
+    const textArea = document.createElement("textarea");
+    textArea.value = email;
+    document.body.appendChild(textArea);
+    textArea.select();
+    
+    try {
+      document.execCommand('copy');
+      setEmailCopied(true);
+      setTimeout(() => setEmailCopied(false), 2000); // Reset after 2 seconds
+    } catch (err) {
+      console.error('Failed to copy email', err);
+    }
+    
+    document.body.removeChild(textArea);
   };
 
   const NavLink = ({ to, label }) => (
@@ -455,13 +486,13 @@ const App = () => {
                                 </button>
                                 
                                 <a 
-                                    href="/resume.pdf" 
+                                    href={resolvePath('/resume.pdf')}
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="bg-white text-gray-900 border border-gray-200 px-6 py-3 rounded-lg font-medium hover:bg-gray-50 transition-colors flex items-center gap-2"
                                 >
                                     <FileText size={18} />
-                                    View Resume
+                                    Resume
                                 </a>
                             </div>
                         </div>
@@ -559,10 +590,13 @@ const App = () => {
                 </p>
                 
                 <div className="flex flex-col md:flex-row gap-6 mb-16">
-                    <a href="mailto:thealec.chen@mail.utoronto.ca" className="flex items-center gap-3 px-8 py-4 bg-gray-900 text-white rounded-xl font-medium hover:bg-gray-800 transition-all hover:-translate-y-1 shadow-lg">
-                        <Mail />
-                        Email Me
-                    </a>
+                    <button 
+                        onClick={handleCopyEmail}
+                        className={`flex items-center gap-3 px-8 py-4 rounded-xl font-medium transition-all hover:-translate-y-1 shadow-lg ${emailCopied ? 'bg-green-600 text-white' : 'bg-gray-900 text-white hover:bg-gray-800'}`}
+                    >
+                        {emailCopied ? <Check /> : <Mail />}
+                        {emailCopied ? 'Email Copied!' : 'Email Me'}
+                    </button>
                     <a href="https://linkedin.com/in/thealecchen" target="_blank" rel="noreferrer" className="flex items-center gap-3 px-8 py-4 bg-white border border-gray-200 text-gray-900 rounded-xl font-medium hover:bg-gray-50 transition-all hover:-translate-y-1 shadow-sm">
                         <Linkedin />
                         LinkedIn
@@ -595,7 +629,7 @@ const ProjectCard = ({ project, onClick }) => (
         <div className="h-48 bg-gray-100 relative overflow-hidden flex items-center justify-center group-hover:bg-blue-50 transition-colors">
             {project.images && project.images[0] ? (
                 <img 
-                    src={project.images[0]} 
+                    src={resolvePath(project.images[0])} 
                     alt={project.title} 
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                 />
@@ -682,7 +716,7 @@ const ProjectDetail = ({ project, onBack }) => (
                 {/* Main Image */}
                 <div className="md:col-span-2 aspect-video bg-gray-100 rounded-2xl overflow-hidden border border-gray-100 shadow-sm">
                     {project.images && project.images[0] ? (
-                        <img src={project.images[0]} alt="Main View" className="w-full h-full object-cover" />
+                        <img src={resolvePath(project.images[0])} alt="Main View" className="w-full h-full object-cover" />
                     ) : (
                         <div className="w-full h-full flex items-center justify-center text-gray-300">
                             {project.icon}
@@ -693,7 +727,7 @@ const ProjectDetail = ({ project, onBack }) => (
                 {/* Secondary Images */}
                 <div className="aspect-video bg-gray-100 rounded-2xl overflow-hidden border border-gray-100 shadow-sm">
                     {project.images && project.images[1] ? (
-                        <img src={project.images[1]} alt="Detail View 1" className="w-full h-full object-cover" />
+                        <img src={resolvePath(project.images[1])} alt="Detail View 1" className="w-full h-full object-cover" />
                     ) : (
                         <div className="w-full h-full flex items-center justify-center text-gray-300 text-sm">Detail Shot 1</div>
                     )}
@@ -701,7 +735,7 @@ const ProjectDetail = ({ project, onBack }) => (
 
                 <div className="aspect-video bg-gray-100 rounded-2xl overflow-hidden border border-gray-100 shadow-sm">
                     {project.images && project.images[2] ? (
-                        <img src={project.images[2]} alt="Detail View 2" className="w-full h-full object-cover" />
+                        <img src={resolvePath(project.images[2])} alt="Detail View 2" className="w-full h-full object-cover" />
                     ) : (
                         <div className="w-full h-full flex items-center justify-center text-gray-300 text-sm">Detail Shot 2</div>
                     )}
