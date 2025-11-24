@@ -143,8 +143,7 @@ const ThreeCanvas = () => {
 
 /**
  * DATA: Portfolio Projects
- * UPDATED: Added 'image' property to each project.
- * IMPORTANT: Ensure you add these files to your /public/images/ folder.
+ * UPDATED: 'what', 'how', 'outcome' are now ARRAYS of strings for bullet points.
  */
 const projects = [
     {
@@ -153,12 +152,25 @@ const projects = [
         title: 'Custom CNC Machine',
         subtitle: 'University of Toronto',
         description: 'Large-format 3-axis CNC router with 229 parts and 400+ mates.',
-        what: 'Designed and modelled a large-format three-axis CNC router with a combination of custom-designed parts and McMaster-Carr components. The objective was to maximize utility, modularity, and repairability while keeping costs low.',
-        how: 'Researched components to optimize for cost-efficiency and performance based on design specifications. Developed and delivered Google Slides to communicate key design features and trade-offs, effectively securing approval during engineering design briefing.',
-        outcome: 'Designed and modelled a custom CNC router with 229 parts and 400+ mates in SolidWorks. Created a comprehensive design report, including engineering specifications, component justification and a bill of materials.',
+        what: [
+            "Designed and modelled a large-format three-axis CNC router with a combination of custom-designed parts and McMaster-Carr components.",
+            "The objective was to maximize utility, modularity, and repairability while keeping costs low."
+        ],
+        how: [
+            "Researched components to optimize for cost-efficiency and performance based on design specifications.",
+            "Developed and delivered Google Slides to communicate key design features and trade-offs, effectively securing approval during engineering design briefing."
+        ],
+        outcome: [
+            "Designed and modelled a custom CNC router with 229 parts and 400+ mates in SolidWorks.",
+            "Created a comprehensive design report, including engineering specifications, component justification and a bill of materials outlining all components required to assemble the router."
+        ],
         tags: ['SolidWorks', 'Mechatronics', 'Design for Assembly'],
         icon: <Cpu className="w-6 h-6" />,
-        image: '/images/cnc.jpg' // PLACEHOLDER: Update filename
+        images: [
+            '/images/cnc-1.jpg',
+            '/images/cnc-2.jpg',
+            '/images/cnc-3.jpg'
+        ]
     },
     {
         id: 'ir-holder',
@@ -166,12 +178,27 @@ const projects = [
         title: 'IR Camera Holder',
         subtitle: 'LEMAM',
         description: 'Adjustable lens mount and fixture for a $27,000 IR camera.',
-        what: 'Designed an adjustable lens mount and fixture for a $27,000 IR camera. The objective was to create a stable fixture that had smooth motion and fast print times.',
-        how: 'Designed a cap with standardized Sony threads to mount lens filter onto IR Camera. Measured mounting hole dimensions on DED machine for design. Created fixture to combine IR camera with linear guide which was mounted to the DED machine.',
-        outcome: 'IR camera now has 50+mm of travel along the Z-axis for focusing. IR camera is stable, with less than 2mm of wobble when secured. Net print time of under 2 hours on the Prusa i3 mk3s+.',
+        what: [
+            "Designed an adjustable lens mount and fixture for a $27,000 IR camera.",
+            "The objective was to create a stable fixture that had smooth motion and fast print times."
+        ],
+        how: [
+            "Designed a cap with standardized Sony threads to mount lens filter onto IR Camera.",
+            "Measured mounting hole dimensions on DED machine for design.",
+            "Created fixture to combine IR camera with linear guide which was mounted to the DED machine."
+        ],
+        outcome: [
+            "IR camera now has 50+mm of travel along the Z-axis for focusing.",
+            "IR camera is stable, with less than 2mm of wobble when secured.",
+            "Net print time of under 2 hours on the Prusa i3 mk3s+."
+        ],
         tags: ['Precision Design', '3D Printing', 'Fixture Design'],
         icon: <Cpu className="w-6 h-6" />,
-        image: '/images/ir-holder.jpg' // PLACEHOLDER
+        images: [
+            '/images/ir-holder-1.jpg',
+            '/images/ir-holder-2.jpg',
+            '/images/ir-holder-3.jpg'
+        ]
     },
     {
         id: 'chess-board',
@@ -179,12 +206,27 @@ const projects = [
         title: 'LED Embedded Chess Board',
         subtitle: 'Spark! Design Team',
         description: 'Ultra-thin (7.7mm) chessboard with 1024+ embedded LEDs.',
-        what: 'Designed an LED-embedded chessboard for my design team\'s Smart Chess project. The objective was to optimize the board thickness, ensuring structural strength while maintaining a thin profile for reliable magnetic attraction on opposite sides of the board.',
-        how: 'Designed a system with three layers: a topper that connected to other toppers and prevented light bleed to other positions, a diffusion layer and a layer for holding LED strips. Used OnShape to prototype and test 10+ iterations during the design process. Tested light diffusion using the FastLED Arduino library.',
-        outcome: 'Designed and manufactured a LED-embedded chessboard with a thickness of 7.7mm and a deflection of less than 2mm. Chessboard contains 1024+ LEDS with little to no light diffusing between the grids.',
+        what: [
+            "Designed an LED-embedded chessboard for my design team's Smart Chess project.",
+            "The objective was to optimize the board thickness, ensuring structural strength while maintaining a thin profile for reliable magnetic attraction on opposite sides of the board.",
+            "Light from LEDs also had to diffuse minimally between board pieces."
+        ],
+        how: [
+            "Designed a system with three layers: a topper that connected to other toppers and prevented light bleed to other positions, a diffusion layer and a layer for holding LED strips.",
+            "Used OnShape to prototype and test 10+ iterations during the design process.",
+            "Tested light diffusion using the FastLED Arduino library."
+        ],
+        outcome: [
+            "Designed and manufactured a LED-embedded chessboard with a thickness of 7.7mm and a deflection of less than 2mm.",
+            "Chessboard contains 1024+ LEDS with little to no light diffusing between the grids."
+        ],
         tags: ['Electronics', 'OnShape', 'Firmware', 'FastLED'],
         icon: <Cpu className="w-6 h-6" />,
-        image: '/images/chess-board.jpg' // PLACEHOLDER
+        images: [
+            '/images/chess-board-1.jpg',
+            '/images/chess-board-2.jpg',
+            '/images/chess-board-3.jpg'
+        ]
     },
     {
         id: 'keyboard',
@@ -192,12 +234,26 @@ const projects = [
         title: '3x3 Custom Keyboard',
         subtitle: 'Personal Project',
         description: 'Macro-pad designed to optimize SolidWorks workflow.',
-        what: 'Designed a custom keyboard for optimizing my workflow in SolidWorks. The objective was to increase efficiency while maintaining an intuitive and visually appealing design.',
-        how: 'Designed a 3D-printed enclosure with heat inserts to mount a microcontroller, rotary encoder, and OLED screen. Designed and ordered a custom PCB for the switches using KICAD. Developed custom firmware for communication between components.',
-        outcome: 'Created a custom macropad with 39+ programmable functions. Gained end-to-end product design experience, from CAD modelling to electronics integration and firmware development.',
+        what: [
+            "Designed a custom keyboard for optimizing my workflow in SolidWorks.",
+            "The objective was to increase efficiency while maintaining an intuitive and visually appealing design."
+        ],
+        how: [
+            "Designed a 3D-printed enclosure with heat inserts to mount a microcontroller, rotary encoder, and OLED screen.",
+            "Designed and ordered a custom PCB for the switches using KICAD.",
+            "Developed custom firmware for communication between components."
+        ],
+        outcome: [
+            "Created a custom macropad with 39+ programmable functions.",
+            "Gained end-to-end product design experience, from CAD modelling to electronics integration and firmware development."
+        ],
         tags: ['KiCad', 'PCB Design', 'Firmware', 'Product Design'],
         icon: <PenTool className="w-6 h-6" />,
-        image: '/images/macro/macro3.jpg' // PLACEHOLDER
+        images: [
+            '/images/macro/macro3.jpg',
+            '/images/macro/macro2.jpg',
+            '/images/macro/macro1.png'
+        ]
     },
     {
         id: 'frame',
@@ -205,12 +261,26 @@ const projects = [
         title: 'Smart Digital Frame',
         subtitle: 'Personal Project',
         description: 'A dual-purpose digital photo frame and external monitor.',
-        what: 'Designed a smartphone-controllable digital photo frame that can double as an external monitor. The objective was to maximize utility while keeping the design simple and unobtrusive on the desk.',
-        how: 'Researched and learned how to woodwork with hand drills and saws to create the enclosure. Learned Python to adapt and debug scripts from GitHub. Created an enclosure that integrated a Raspberry Pi, cooling fan, 11" monitor, HDMI switcher, and monitor control board.',
-        outcome: 'Digital photo frame with 32GB of expandable storage using USB ports. Photo frame features can be controlled by connecting the phone to the local network.',
+        what: [
+            "Designed a smartphone-controllable digital photo frame that can double as an external monitor.",
+            "The objective was to maximize utility while keeping the design simple and unobtrusive on the desk."
+        ],
+        how: [
+            "Researched and learned how to woodwork with hand drills and saws to create the enclosure.",
+            "Learned Python to adapt and debug scripts from GitHub.",
+            "Created an enclosure that integrated a Raspberry Pi, cooling fan, 11\" monitor, HDMI switcher, and monitor control board."
+        ],
+        outcome: [
+            "Digital photo frame with 32GB of expandable storage using USB ports.",
+            "Photo frame features can be controlled by connecting the phone to the local network."
+        ],
         tags: ['Python', 'Woodworking', 'IoT', 'Raspberry Pi'],
         icon: <PenTool className="w-6 h-6" />,
-        image: '/images/frame.jpg' // PLACEHOLDER
+        images: [
+            '/images/frame-1.jpg',
+            '/images/frame-2.jpg',
+            '/images/frame-3.jpg'
+        ]
     },
     {
         id: 'airpods',
@@ -218,12 +288,25 @@ const projects = [
         title: 'AirPods Dock',
         subtitle: 'Personal Project',
         description: 'Print-in-place charging dock mechanism designed for intuitive use.',
-        what: 'Designed and modelled a custom dock and charger for my AirPods Pro to encourage myself to charge my AirPods more. The objective was to maximize access speed, intuitivity and simplicity.',
-        how: 'Researched and developed a print-in-place mechanism so that the entire part can be printed without assembly, despite containing two separate parts. Designed and modelled 2 prototypes to ensure perfect fit for Magsafe Charger and Airpods.',
-        outcome: 'My AirPods have always been charged before leaving the house for the past 6 months. All relevant files and print instructions are open-source on Thingiverse.',
+        what: [
+            "Designed and modelled a custom dock and charger for my AirPods Pro to encourage myself to charge my AirPods more.",
+            "The objective was to maximize access speed, intuitivity and simplicity."
+        ],
+        how: [
+            "Researched and developed a print-in-place mechanism so that the entire part can be printed without assembly, despite containing two separate parts.",
+            "Designed and modelled 2 prototypes to ensure perfect fit for Magsafe Charger and Airpods."
+        ],
+        outcome: [
+            "My AirPods have always been charged before leaving the house for the past 6 months.",
+            "All relevant files and print instructions are open-source on Thingiverse."
+        ],
         tags: ['Mechanism Design', 'Rapid Prototyping', 'Thingiverse'],
         icon: <PenTool className="w-6 h-6" />,
-        image: '/images/airpods.jpg' // PLACEHOLDER
+        images: [
+            '/images/airpods-1.jpg',
+            '/images/airpods-2.jpg',
+            '/images/airpods-3.jpg'
+        ]
     },
     {
         id: 'chess-pieces',
@@ -231,12 +314,26 @@ const projects = [
         title: 'Poly Chess Pieces',
         subtitle: 'Spark! Design Team',
         description: 'Low-poly aesthetic chess pieces designed to house internal magnets.',
-        what: 'Designed four unique chess pieces with internal magnets for my team\'s Smart Chess project. The objective was to design something with a low-poly aesthetic that could house internal magnets.',
-        how: 'Designed and modelled the chess pieces in Blender. Created renders of the design in Blender for marketing purposes. Created a Blender to SolidWorks workflow to utilize both organic modelling and technical refinement across both software tools. Designed a 3D printable clip-on cover and magnet slots within SolidWorks.',
-        outcome: 'Marketing renders and functional magnetic prototypes.',
+        what: [
+            "Designed four unique chess pieces with internal magnets for my team's Smart Chess project.",
+            "The objective was to design something with a low-poly aesthetic that could house internal magnets."
+        ],
+        how: [
+            "Designed and modelled the chess pieces in Blender.",
+            "Created renders of the design in Blender for marketing purposes.",
+            "Created a Blender to SolidWorks workflow to utilize both organic modelling and technical refinement across both software tools.",
+            "Designed a 3D printable clip-on cover and magnet slots within SolidWorks."
+        ],
+        outcome: [
+            "Marketing renders and functional magnetic prototypes."
+        ],
         tags: ['Blender', 'Surface Modelling', 'Rendering'],
         icon: <PenTool className="w-6 h-6" />,
-        image: '/images/chess-pieces.jpg' // PLACEHOLDER
+        images: [
+            '/images/chess-pieces-1.jpg',
+            '/images/chess-pieces-2.jpg',
+            '/images/chess-pieces-3.jpg'
+        ]
     },
      {
         id: 'hair-dryer',
@@ -244,12 +341,25 @@ const projects = [
         title: 'Hair Dryer Holder',
         subtitle: 'Personal Project',
         description: 'Minimalist bathroom organizer designed for support-free 3D printing.',
-        what: 'Designed a hair dryer holder so that I can hide my hair dryer within my bathroom closet. The objective was to design something with sufficient support while remaining simple and fast to print.',
-        how: 'Measured and modelled hair dryer to test fitting within a SolidWorks Assembly. Strategically designed model to ensure no supports were needed, thus saving filament and keeping print times low.',
-        outcome: 'Space beside bathroom sink is now 50% less cluttered. Project received positive feedback, with 47 likes and 8 saves on Thingiverse.',
+        what: [
+            "Designed a hair dryer holder so that I can hide my hair dryer within my bathroom closet.",
+            "The objective was to design something with sufficient support while remaining simple and fast to print."
+        ],
+        how: [
+            "Measured and modelled hair dryer to test fitting within a SolidWorks Assembly.",
+            "Strategically designed model to ensure no supports were needed, thus saving filament and keeping print times low."
+        ],
+        outcome: [
+            "Space beside bathroom sink is now 50% less cluttered.",
+            "Project received positive feedback, with 47 likes and 8 saves on Thingiverse."
+        ],
         tags: ['Consumer Goods', 'FDM Printing', 'Optimization'],
         icon: <PenTool className="w-6 h-6" />,
-        image: '/images/hair-dryer.jpg' // PLACEHOLDER
+        images: [
+            '/images/hair-dryer-1.jpg',
+            '/images/hair-dryer-2.jpg',
+            '/images/hair-dryer-3.jpg'
+        ]
     },
 ];
 
@@ -483,9 +593,9 @@ const ProjectCard = ({ project, onClick }) => (
         className="group bg-white rounded-xl border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1 flex flex-col h-full cursor-pointer"
     >
         <div className="h-48 bg-gray-100 relative overflow-hidden flex items-center justify-center group-hover:bg-blue-50 transition-colors">
-            {project.image ? (
+            {project.images && project.images[0] ? (
                 <img 
-                    src={project.image} 
+                    src={project.images[0]} 
                     alt={project.title} 
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                 />
@@ -531,34 +641,21 @@ const ProjectCard = ({ project, onClick }) => (
 );
 
 const ProjectDetail = ({ project, onBack }) => (
-    <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-        {/* Detail Header */}
-        <div className="bg-gray-50 border-b border-gray-100 py-12 md:py-20">
-            <div className="max-w-4xl mx-auto px-6">
+    <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 pb-20">
+        
+        {/* Navigation / Header */}
+        <div className="bg-white sticky top-16 z-40 border-b border-gray-100 px-6 py-4">
+            <div className="max-w-6xl mx-auto flex items-center justify-between">
                 <button 
                     onClick={onBack}
-                    className="mb-8 flex items-center gap-2 text-sm text-gray-500 hover:text-black transition-colors"
+                    className="flex items-center gap-2 text-sm text-gray-500 hover:text-black transition-colors"
                 >
                     <ArrowLeft size={16} />
-                    Back to Portfolio
+                    Back to Projects
                 </button>
-                
-                <div className="mb-6 flex items-center gap-3">
-                    <span className={`text-xs font-bold px-3 py-1 rounded-full bg-white border border-gray-200 ${project.category === 'Engineering' ? 'text-blue-600' : 'text-purple-600'}`}>
-                        {project.category}
-                    </span>
-                    <span className="text-sm text-gray-500 font-medium uppercase tracking-wide">
-                        {project.subtitle}
-                    </span>
-                </div>
-
-                <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6 leading-tight">
-                    {project.title}
-                </h1>
-
-                <div className="flex flex-wrap gap-2">
+                <div className="flex gap-3">
                     {project.tags.map(tag => (
-                        <span key={tag} className="px-3 py-1 bg-white border border-gray-200 text-gray-600 rounded-md text-sm">
+                        <span key={tag} className="hidden md:inline-block px-2 py-1 bg-gray-50 border border-gray-100 text-gray-500 rounded text-xs">
                             {tag}
                         </span>
                     ))}
@@ -566,61 +663,83 @@ const ProjectDetail = ({ project, onBack }) => (
             </div>
         </div>
 
-        {/* Content */}
-        <div className="max-w-4xl mx-auto px-6 py-16">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+        <div className="max-w-6xl mx-auto px-6 py-12">
+            
+            {/* Title Block */}
+            <div className="mb-12 max-w-3xl">
+                <span className={`text-xs font-bold px-3 py-1 rounded-full border mb-4 inline-block ${project.category === 'Engineering' ? 'bg-blue-50 border-blue-100 text-blue-600' : 'bg-purple-50 border-purple-100 text-purple-600'}`}>
+                    {project.category}
+                </span>
+                <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-2 leading-tight">
+                    {project.title}
+                </h1>
+                <p className="text-xl text-gray-500 font-medium">{project.subtitle}</p>
+            </div>
+
+            {/* BENTO GRID IMAGES - Main Visual Focus */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-16">
                 
-                {/* Visual Section (Left Column) */}
-                <div className="md:col-span-1">
-                     <div className="bg-gray-100 rounded-xl aspect-square overflow-hidden border border-gray-200 sticky top-24">
-                        {project.image ? (
-                            <img 
-                                src={project.image} 
-                                alt={project.title} 
-                                className="w-full h-full object-cover"
-                            />
-                        ) : (
-                            <div className="w-full h-full flex items-center justify-center">
-                                <div className="text-center p-6">
-                                    <div className="text-gray-300 mb-4 flex justify-center">{project.icon}</div>
-                                    <p className="text-sm text-gray-400">Project Gallery Placeholder</p>
-                                </div>
-                            </div>
-                        )}
-                     </div>
+                {/* Main Image */}
+                <div className="md:col-span-2 aspect-video bg-gray-100 rounded-2xl overflow-hidden border border-gray-100 shadow-sm">
+                    {project.images && project.images[0] ? (
+                        <img src={project.images[0]} alt="Main View" className="w-full h-full object-cover" />
+                    ) : (
+                        <div className="w-full h-full flex items-center justify-center text-gray-300">
+                            {project.icon}
+                        </div>
+                    )}
                 </div>
 
-                {/* Text Content (Right Column) */}
-                <div className="md:col-span-2 space-y-12">
-                    
-                    <div>
-                        <h3 className="text-xl font-bold text-gray-900 mb-3 flex items-center gap-2">
-                            What?
-                        </h3>
-                        <p className="text-gray-600 leading-relaxed text-lg">
-                            {project.what}
-                        </p>
-                    </div>
-
-                    <div>
-                        <h3 className="text-xl font-bold text-gray-900 mb-3 flex items-center gap-2">
-                            How?
-                        </h3>
-                        <p className="text-gray-600 leading-relaxed text-lg">
-                            {project.how}
-                        </p>
-                    </div>
-
-                    <div className="bg-blue-50 p-6 rounded-xl border border-blue-100">
-                        <h3 className="text-lg font-bold text-blue-900 mb-2">
-                            Outcomes
-                        </h3>
-                        <p className="text-blue-800 leading-relaxed">
-                            {project.outcome}
-                        </p>
-                    </div>
-
+                {/* Secondary Images */}
+                <div className="aspect-video bg-gray-100 rounded-2xl overflow-hidden border border-gray-100 shadow-sm">
+                    {project.images && project.images[1] ? (
+                        <img src={project.images[1]} alt="Detail View 1" className="w-full h-full object-cover" />
+                    ) : (
+                        <div className="w-full h-full flex items-center justify-center text-gray-300 text-sm">Detail Shot 1</div>
+                    )}
                 </div>
+
+                <div className="aspect-video bg-gray-100 rounded-2xl overflow-hidden border border-gray-100 shadow-sm">
+                    {project.images && project.images[2] ? (
+                        <img src={project.images[2]} alt="Detail View 2" className="w-full h-full object-cover" />
+                    ) : (
+                        <div className="w-full h-full flex items-center justify-center text-gray-300 text-sm">Detail Shot 2</div>
+                    )}
+                </div>
+            </div>
+
+            {/* Project Content - Centered & Stacked */}
+            <div className="max-w-3xl mx-auto space-y-16">
+                
+                <div className="space-y-4">
+                    <h3 className="text-xl font-bold text-gray-900">What?</h3>
+                     <ul className="list-disc list-outside ml-4 space-y-2 text-lg text-gray-600 leading-relaxed">
+                        {project.what.map((point, index) => (
+                            <li key={index}>{point}</li>
+                        ))}
+                    </ul>
+                </div>
+
+                <div className="space-y-4">
+                    <h3 className="text-xl font-bold text-gray-900">How?</h3>
+                     <ul className="list-disc list-outside ml-4 space-y-2 text-lg text-gray-600 leading-relaxed">
+                        {project.how.map((point, index) => (
+                            <li key={index}>{point}</li>
+                        ))}
+                    </ul>
+                </div>
+
+                <div className="space-y-4">
+                    <h3 className="text-xl font-bold text-gray-900">Outcome</h3>
+                     <div className="bg-gray-50 p-6 rounded-xl border border-gray-100">
+                         <ul className="list-disc list-outside ml-4 space-y-2 text-gray-800 leading-relaxed font-medium">
+                            {project.outcome.map((point, index) => (
+                                <li key={index}>{point}</li>
+                            ))}
+                        </ul>
+                    </div>
+                </div>
+
             </div>
         </div>
     </div>
