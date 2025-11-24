@@ -1,9 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Github, Linkedin, Mail, FileText, Box, Cpu, PenTool, X, ChevronRight, Menu } from 'lucide-react';
+import { Github, Linkedin, Mail, FileText, Box, Cpu, PenTool, X, ChevronRight, Menu, ArrowLeft, ExternalLink } from 'lucide-react';
 
 /**
  * UTILITY: Script Loader for Three.js
- * Loads Three.js and STLLoader dynamically so the 3D features work in the browser.
  */
 const useThreeScripts = () => {
   const [loaded, setLoaded] = useState(false);
@@ -16,25 +15,19 @@ const useThreeScripts = () => {
 
     const loadThree = async () => {
       try {
-        // Load main Three.js
         const threeScript = document.createElement('script');
         threeScript.src = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';
         threeScript.async = true;
         document.body.appendChild(threeScript);
 
-        await new Promise((resolve) => {
-          threeScript.onload = resolve;
-        });
+        await new Promise((resolve) => { threeScript.onload = resolve; });
 
-        // Load STLLoader (Needs to be loaded after Three)
         const stlScript = document.createElement('script');
         stlScript.src = 'https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/STLLoader.js';
         stlScript.async = true;
         document.body.appendChild(stlScript);
 
-        await new Promise((resolve) => {
-          stlScript.onload = resolve;
-        });
+        await new Promise((resolve) => { stlScript.onload = resolve; });
 
         setLoaded(true);
       } catch (e) {
@@ -61,26 +54,21 @@ const ThreeCanvas = () => {
     const WIDTH = containerRef.current.clientWidth;
     const HEIGHT = containerRef.current.clientHeight;
 
-    // Scene Setup
     const scene = new window.THREE.Scene();
-    scene.background = new window.THREE.Color(0xf9fafb); // Tailwind gray-50
-    // Add some fog for depth
+    scene.background = new window.THREE.Color(0xf9fafb); 
     scene.fog = new window.THREE.Fog(0xf9fafb, 10, 50);
 
-    // Camera
     const camera = new window.THREE.PerspectiveCamera(45, WIDTH / HEIGHT, 0.1, 1000);
     camera.position.z = 20;
     camera.position.y = 10;
     camera.lookAt(0, 0, 0);
 
-    // Renderer
     const renderer = new window.THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setSize(WIDTH, HEIGHT);
     renderer.shadowMap.enabled = true;
-    containerRef.current.innerHTML = ''; // Clear previous
+    containerRef.current.innerHTML = '';
     containerRef.current.appendChild(renderer.domElement);
 
-    // Lights
     const hemiLight = new window.THREE.HemisphereLight(0xffffff, 0x444444, 0.6);
     hemiLight.position.set(0, 20, 0);
     scene.add(hemiLight);
@@ -90,53 +78,38 @@ const ThreeCanvas = () => {
     dirLight.castShadow = true;
     scene.add(dirLight);
 
-    // Object Holder
-    let currentMesh = null;
-    let frameId = null;
-
-    // Helper to center and scale object
     const setupMesh = (mesh) => {
-        if (currentMesh) {
-            scene.remove(currentMesh);
-        }
-        
-        // Material - Product Design Aesthetic (Matte White/Grey)
         const material = new window.THREE.MeshStandardMaterial({ 
             color: 0xe5e7eb, 
             roughness: 0.6,
             metalness: 0.1
         });
-        
         mesh.material = material;
         mesh.castShadow = true;
         mesh.receiveShadow = true;
 
-        // Centering
         const box = new window.THREE.Box3().setFromObject(mesh);
         const center = box.getCenter(new window.THREE.Vector3());
         const size = box.getSize(new window.THREE.Vector3());
-        
         const maxDim = Math.max(size.x, size.y, size.z);
-        const scale = 10 / maxDim; // Scale to fit view
+        const scale = 10 / maxDim; 
         
         mesh.scale.set(scale, scale, scale);
         mesh.position.x = -center.x * scale;
         mesh.position.y = -center.y * scale;
         mesh.position.z = -center.z * scale;
         
-        // Add subtle rotation group
         const group = new window.THREE.Group();
         group.add(mesh);
         scene.add(group);
-        currentMesh = group;
+        return group;
     };
 
-    // Default Abstract Shape (Torus Knot)
     const geometry = new window.THREE.TorusKnotGeometry(4, 1.2, 128, 32);
     const mesh = new window.THREE.Mesh(geometry);
-    setupMesh(mesh);
+    const currentMesh = setupMesh(mesh);
 
-    // Animation Loop
+    let frameId;
     const animate = () => {
       frameId = requestAnimationFrame(animate);
       if (currentMesh) {
@@ -147,7 +120,6 @@ const ThreeCanvas = () => {
     };
     animate();
 
-    // Resize Handler
     const handleResize = () => {
         if (!containerRef.current) return;
         const newWidth = containerRef.current.clientWidth;
@@ -166,13 +138,12 @@ const ThreeCanvas = () => {
     };
   }, [scriptsLoaded]);
 
-  return (
-    <div ref={containerRef} className="w-full h-full absolute inset-0 z-0" />
-  );
+  return <div ref={containerRef} className="w-full h-full absolute inset-0 z-0" />;
 };
 
 /**
- * DATA: Portfolio Projects from PDF
+ * DATA: Portfolio Projects
+ * Expanded with 'what' and 'how' fields for the detail view.
  */
 const projects = [
     {
@@ -180,9 +151,11 @@ const projects = [
         category: 'Engineering',
         title: 'Custom CNC Machine',
         subtitle: 'University of Toronto',
-        description: 'Large-format 3-axis CNC router with 229 parts and 400+ mates. Designed for modularity and repairability using a mix of custom and off-the-shelf components.',
+        description: 'Large-format 3-axis CNC router with 229 parts and 400+ mates.',
+        what: 'Designed and modelled a large-format three-axis CNC router with a combination of custom-designed parts and McMaster-Carr components. The objective was to maximize utility, modularity, and repairability while keeping costs low.',
+        how: 'Researched components to optimize for cost-efficiency and performance based on design specifications. Developed and delivered Google Slides to communicate key design features and trade-offs, effectively securing approval during engineering design briefing.',
+        outcome: 'Designed and modelled a custom CNC router with 229 parts and 400+ mates in SolidWorks. Created a comprehensive design report, including engineering specifications, component justification and a bill of materials.',
         tags: ['SolidWorks', 'Mechatronics', 'Design for Assembly'],
-        outcome: 'Comprehensive design report and full BOM generation.',
         icon: <Cpu className="w-6 h-6" />
     },
     {
@@ -190,9 +163,11 @@ const projects = [
         category: 'Engineering',
         title: 'IR Camera Holder',
         subtitle: 'LEMAM',
-        description: 'Adjustable lens mount and fixture for a $27,000 IR camera. Features a custom cap with standard Sony threads and a linear guide mount.',
+        description: 'Adjustable lens mount and fixture for a $27,000 IR camera.',
+        what: 'Designed an adjustable lens mount and fixture for a $27,000 IR camera. The objective was to create a stable fixture that had smooth motion and fast print times.',
+        how: 'Designed a cap with standardized Sony threads to mount lens filter onto IR Camera. Measured mounting hole dimensions on DED machine for design. Created fixture to combine IR camera with linear guide which was mounted to the DED machine.',
+        outcome: 'IR camera now has 50+mm of travel along the Z-axis for focusing. IR camera is stable, with less than 2mm of wobble when secured. Net print time of under 2 hours on the Prusa i3 mk3s+.',
         tags: ['Precision Design', '3D Printing', 'Fixture Design'],
-        outcome: 'Achieved <2mm wobble and 50mm+ Z-axis travel.',
         icon: <Cpu className="w-6 h-6" />
     },
     {
@@ -200,9 +175,11 @@ const projects = [
         category: 'Engineering',
         title: 'LED Embedded Chess Board',
         subtitle: 'Spark! Design Team',
-        description: 'Ultra-thin (7.7mm) chessboard with 1024+ embedded LEDs. Engineered to prevent light bleed between squares while maintaining structural integrity.',
+        description: 'Ultra-thin (7.7mm) chessboard with 1024+ embedded LEDs.',
+        what: 'Designed an LED-embedded chessboard for my design team\'s Smart Chess project. The objective was to optimize the board thickness, ensuring structural strength while maintaining a thin profile for reliable magnetic attraction on opposite sides of the board.',
+        how: 'Designed a system with three layers: a topper that connected to other toppers and prevented light bleed to other positions, a diffusion layer and a layer for holding LED strips. Used OnShape to prototype and test 10+ iterations during the design process. Tested light diffusion using the FastLED Arduino library.',
+        outcome: 'Designed and manufactured a LED-embedded chessboard with a thickness of 7.7mm and a deflection of less than 2mm. Chessboard contains 1024+ LEDS with little to no light diffusing between the grids.',
         tags: ['Electronics', 'OnShape', 'Firmware', 'FastLED'],
-        outcome: 'Successfully manufactured with minimal deflection.',
         icon: <Cpu className="w-6 h-6" />
     },
     {
@@ -210,9 +187,11 @@ const projects = [
         category: 'Creative',
         title: '3x3 Custom Keyboard',
         subtitle: 'Personal Project',
-        description: 'Macro-pad designed to optimize SolidWorks workflow. Features a 3D-printed enclosure, OLED screen, rotary encoder, and custom PCB.',
+        description: 'Macro-pad designed to optimize SolidWorks workflow.',
+        what: 'Designed a custom keyboard for optimizing my workflow in SolidWorks. The objective was to increase efficiency while maintaining an intuitive and visually appealing design.',
+        how: 'Designed a 3D-printed enclosure with heat inserts to mount a microcontroller, rotary encoder, and OLED screen. Designed and ordered a custom PCB for the switches using KICAD. Developed custom firmware for communication between components.',
+        outcome: 'Created a custom macropad with 39+ programmable functions. Gained end-to-end product design experience, from CAD modelling to electronics integration and firmware development.',
         tags: ['KiCad', 'PCB Design', 'Firmware', 'Product Design'],
-        outcome: '39+ programmable functions in a compact form factor.',
         icon: <PenTool className="w-6 h-6" />
     },
     {
@@ -220,9 +199,11 @@ const projects = [
         category: 'Creative',
         title: 'Smart Digital Frame',
         subtitle: 'Personal Project',
-        description: 'A dual-purpose digital photo frame and external monitor. Built with a Raspberry Pi, custom woodworking, and Python scripts for automation.',
+        description: 'A dual-purpose digital photo frame and external monitor.',
+        what: 'Designed a smartphone-controllable digital photo frame that can double as an external monitor. The objective was to maximize utility while keeping the design simple and unobtrusive on the desk.',
+        how: 'Researched and learned how to woodwork with hand drills and saws to create the enclosure. Learned Python to adapt and debug scripts from GitHub. Created an enclosure that integrated a Raspberry Pi, cooling fan, 11" monitor, HDMI switcher, and monitor control board.',
+        outcome: 'Digital photo frame with 32GB of expandable storage using USB ports. Photo frame features can be controlled by connecting the phone to the local network.',
         tags: ['Python', 'Woodworking', 'IoT', 'Raspberry Pi'],
-        outcome: 'Seamless integration of tech into home decor.',
         icon: <PenTool className="w-6 h-6" />
     },
     {
@@ -230,9 +211,11 @@ const projects = [
         category: 'Creative',
         title: 'AirPods Dock',
         subtitle: 'Personal Project',
-        description: 'Print-in-place charging dock mechanism designed for intuitive use. Maximizes access speed and ensures reliable charging contact.',
+        description: 'Print-in-place charging dock mechanism designed for intuitive use.',
+        what: 'Designed and modelled a custom dock and charger for my AirPods Pro to encourage myself to charge my AirPods more. The objective was to maximize access speed, intuitivity and simplicity.',
+        how: 'Researched and developed a print-in-place mechanism so that the entire part can be printed without assembly, despite containing two separate parts. Designed and modelled 2 prototypes to ensure perfect fit for Magsafe Charger and Airpods.',
+        outcome: 'My AirPods have always been charged before leaving the house for the past 6 months. All relevant files and print instructions are open-source on Thingiverse.',
         tags: ['Mechanism Design', 'Rapid Prototyping', 'Thingiverse'],
-        outcome: 'Open-sourced design available on Thingiverse.',
         icon: <PenTool className="w-6 h-6" />
     },
     {
@@ -240,9 +223,11 @@ const projects = [
         category: 'Creative',
         title: 'Poly Chess Pieces',
         subtitle: 'Spark! Design Team',
-        description: 'Low-poly aesthetic chess pieces designed to house internal magnets. Utilized a Blender-to-SolidWorks workflow for organic yet technical modeling.',
-        tags: ['Blender', 'Surface Modelling', 'Rendering'],
+        description: 'Low-poly aesthetic chess pieces designed to house internal magnets.',
+        what: 'Designed four unique chess pieces with internal magnets for my team\'s Smart Chess project. The objective was to design something with a low-poly aesthetic that could house internal magnets.',
+        how: 'Designed and modelled the chess pieces in Blender. Created renders of the design in Blender for marketing purposes. Created a Blender to SolidWorks workflow to utilize both organic modelling and technical refinement across both software tools. Designed a 3D printable clip-on cover and magnet slots within SolidWorks.',
         outcome: 'Marketing renders and functional magnetic prototypes.',
+        tags: ['Blender', 'Surface Modelling', 'Rendering'],
         icon: <PenTool className="w-6 h-6" />
     },
      {
@@ -250,9 +235,11 @@ const projects = [
         category: 'Creative',
         title: 'Hair Dryer Holder',
         subtitle: 'Personal Project',
-        description: 'Minimalist bathroom organizer designed for support-free 3D printing. Optimized for material usage and print speed.',
+        description: 'Minimalist bathroom organizer designed for support-free 3D printing.',
+        what: 'Designed a hair dryer holder so that I can hide my hair dryer within my bathroom closet. The objective was to design something with sufficient support while remaining simple and fast to print.',
+        how: 'Measured and modelled hair dryer to test fitting within a SolidWorks Assembly. Strategically designed model to ensure no supports were needed, thus saving filament and keeping print times low.',
+        outcome: 'Space beside bathroom sink is now 50% less cluttered. Project received positive feedback, with 47 likes and 8 saves on Thingiverse.',
         tags: ['Consumer Goods', 'FDM Printing', 'Optimization'],
-        outcome: '47+ likes on Thingiverse.',
         icon: <PenTool className="w-6 h-6" />
     },
 ];
@@ -260,19 +247,23 @@ const projects = [
 const App = () => {
   const [activeTab, setActiveTab] = useState('all');
   const [activeSection, setActiveSection] = useState('home');
+  const [selectedProject, setSelectedProject] = useState(null); // New state for project details
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const engineeringProjects = projects.filter(p => p.category === 'Engineering');
   const creativeProjects = projects.filter(p => p.category === 'Creative');
 
+  const handleNavClick = (section) => {
+    setActiveSection(section);
+    setSelectedProject(null); // Reset selection when navigating via menu
+    setIsMobileMenuOpen(false);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   const NavLink = ({ to, label }) => (
     <button 
-        onClick={() => {
-            setActiveSection(to);
-            setIsMobileMenuOpen(false);
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }}
-        className={`text-sm font-medium transition-colors ${activeSection === to ? 'text-blue-600' : 'text-gray-600 hover:text-black'}`}
+        onClick={() => handleNavClick(to)}
+        className={`text-sm font-medium transition-colors ${activeSection === to && !selectedProject ? 'text-blue-600' : 'text-gray-600 hover:text-black'}`}
     >
         {label}
     </button>
@@ -284,7 +275,10 @@ const App = () => {
       {/* Navigation */}
       <nav className="fixed top-0 w-full bg-white/80 backdrop-blur-md z-50 border-b border-gray-100">
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-          <div className="font-bold text-xl tracking-tight flex items-center gap-2">
+          <div 
+            className="font-bold text-xl tracking-tight flex items-center gap-2 cursor-pointer"
+            onClick={() => handleNavClick('home')}
+          >
             <Box className="w-6 h-6 text-blue-600" />
             <span>ALEC CHEN</span>
           </div>
@@ -305,9 +299,9 @@ const App = () => {
         {/* Mobile Menu */}
         {isMobileMenuOpen && (
              <div className="md:hidden absolute w-full bg-white border-b px-6 py-4 flex flex-col gap-4 shadow-lg">
-                <NavLink to="home" label="Home" />
-                <NavLink to="portfolio" label="Portfolio" />
-                <NavLink to="contact" label="Contact" />
+                <button onClick={() => handleNavClick('home')} className="text-left font-medium text-gray-600">Home</button>
+                <button onClick={() => handleNavClick('portfolio')} className="text-left font-medium text-gray-600">Portfolio</button>
+                <button onClick={() => handleNavClick('contact')} className="text-left font-medium text-gray-600">Contact</button>
              </div>
         )}
       </nav>
@@ -321,10 +315,8 @@ const App = () => {
                 {/* Hero / 3D Viewer */}
                 <div className="h-[80vh] w-full relative overflow-hidden bg-gray-50 flex items-center justify-center">
                     
-                    {/* 3D Background */}
                     <ThreeCanvas />
                     
-                    {/* Hero Overlay */}
                     <div className="absolute inset-0 flex flex-col justify-center items-start max-w-6xl mx-auto px-6 pointer-events-none">
                         <div className="bg-white/90 backdrop-blur-sm p-8 rounded-2xl shadow-sm border border-gray-100 pointer-events-auto max-w-lg">
                             <span className="text-blue-600 font-semibold tracking-wider text-sm mb-2 block">MECHANICAL ENGINEER</span>
@@ -337,7 +329,7 @@ const App = () => {
                             </p>
                             <div className="flex gap-3">
                                 <button 
-                                    onClick={() => setActiveSection('portfolio')}
+                                    onClick={() => handleNavClick('portfolio')}
                                     className="bg-gray-900 text-white px-6 py-3 rounded-lg font-medium hover:bg-gray-800 transition-colors"
                                 >
                                     View Projects
@@ -345,23 +337,22 @@ const App = () => {
                                 
                                 <a 
                                     href="/resume.pdf" 
-                                    download="Alec_Chen_Resume.pdf"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
                                     className="bg-white text-gray-900 border border-gray-200 px-6 py-3 rounded-lg font-medium hover:bg-gray-50 transition-colors flex items-center gap-2"
                                 >
                                     <FileText size={18} />
-                                    Resume
+                                    View Resume
                                 </a>
                             </div>
                         </div>
                     </div>
                     
-                    {/* Scroll Hint */}
                     <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce text-gray-400">
                        <ChevronRight className="rotate-90 w-6 h-6" />
                     </div>
                 </div>
 
-                {/* About Teaser */}
                 <section className="py-24 bg-white">
                     <div className="max-w-4xl mx-auto px-6 text-center">
                         <h2 className="text-3xl font-bold mb-8">About Me</h2>
@@ -377,42 +368,65 @@ const App = () => {
 
         {/* SECTION: PORTFOLIO */}
         {activeSection === 'portfolio' && (
-            <div className="max-w-6xl mx-auto px-6 py-12">
-                <div className="flex flex-col md:flex-row justify-between items-end mb-12 border-b border-gray-100 pb-6">
-                    <div>
-                        <h1 className="text-4xl font-bold mb-2">Selected Works</h1>
-                        <p className="text-gray-500">A curation of engineering challenges and creative explorations.</p>
-                    </div>
-                    <div className="flex gap-2 mt-4 md:mt-0">
-                        <button 
-                            onClick={() => setActiveTab('all')} 
-                            className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${activeTab === 'all' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
-                        >
-                            All
-                        </button>
-                        <button 
-                            onClick={() => setActiveTab('eng')} 
-                            className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${activeTab === 'eng' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
-                        >
-                            Engineering
-                        </button>
-                        <button 
-                            onClick={() => setActiveTab('creative')} 
-                            className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${activeTab === 'creative' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
-                        >
-                            Creative
-                        </button>
-                    </div>
-                </div>
+            <div className="min-h-screen">
+                {/* CONDITIONAL RENDERING: Grid vs Detail */}
+                {!selectedProject ? (
+                    // GRID VIEW
+                    <div className="max-w-6xl mx-auto px-6 py-12">
+                        <div className="flex flex-col md:flex-row justify-between items-end mb-12 border-b border-gray-100 pb-6">
+                            <div>
+                                <h1 className="text-4xl font-bold mb-2">Selected Works</h1>
+                                <p className="text-gray-500">A curation of engineering challenges and creative explorations.</p>
+                            </div>
+                            <div className="flex gap-2 mt-4 md:mt-0">
+                                <button 
+                                    onClick={() => setActiveTab('all')} 
+                                    className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${activeTab === 'all' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
+                                >
+                                    All
+                                </button>
+                                <button 
+                                    onClick={() => setActiveTab('eng')} 
+                                    className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${activeTab === 'eng' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
+                                >
+                                    Engineering
+                                </button>
+                                <button 
+                                    onClick={() => setActiveTab('creative')} 
+                                    className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${activeTab === 'creative' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
+                                >
+                                    Creative
+                                </button>
+                            </div>
+                        </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    {(activeTab === 'all' || activeTab === 'eng') && engineeringProjects.map((project) => (
-                        <ProjectCard key={project.id} project={project} />
-                    ))}
-                    {(activeTab === 'all' || activeTab === 'creative') && creativeProjects.map((project) => (
-                        <ProjectCard key={project.id} project={project} />
-                    ))}
-                </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                            {(activeTab === 'all' || activeTab === 'eng') && engineeringProjects.map((project) => (
+                                <ProjectCard 
+                                    key={project.id} 
+                                    project={project} 
+                                    onClick={() => {
+                                        setSelectedProject(project);
+                                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                                    }}
+                                />
+                            ))}
+                            {(activeTab === 'all' || activeTab === 'creative') && creativeProjects.map((project) => (
+                                <ProjectCard 
+                                    key={project.id} 
+                                    project={project} 
+                                    onClick={() => {
+                                        setSelectedProject(project);
+                                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                                    }}
+                                />
+                            ))}
+                        </div>
+                    </div>
+                ) : (
+                    // DETAIL VIEW
+                    <ProjectDetail project={selectedProject} onBack={() => setSelectedProject(null)} />
+                )}
             </div>
         )}
 
@@ -444,7 +458,6 @@ const App = () => {
 
       </main>
 
-      {/* Footer */}
       <footer className="py-8 border-t border-gray-100 bg-gray-50 text-center text-gray-500 text-sm">
         <p>&copy; {new Date().getFullYear()} Alec Chen. Designed & Built with React & Three.js.</p>
       </footer>
@@ -455,11 +468,12 @@ const App = () => {
 
 /* --- SUBCOMPONENTS --- */
 
-const ProjectCard = ({ project }) => (
-    <div className="group bg-white rounded-xl border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1 flex flex-col h-full">
-        {/* Placeholder for project image - In a real app, this would be project.imageUrl */}
-        <div className="h-48 bg-gray-100 relative overflow-hidden flex items-center justify-center">
-            {/* Pattern Background */}
+const ProjectCard = ({ project, onClick }) => (
+    <div 
+        onClick={onClick}
+        className="group bg-white rounded-xl border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1 flex flex-col h-full cursor-pointer"
+    >
+        <div className="h-48 bg-gray-100 relative overflow-hidden flex items-center justify-center group-hover:bg-blue-50 transition-colors">
             <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#000000_1px,transparent_1px)] [background-size:16px_16px]"></div>
             
             <div className="text-gray-300 group-hover:text-blue-500 transition-colors duration-500 transform group-hover:scale-110">
@@ -483,24 +497,101 @@ const ProjectCard = ({ project }) => (
                 </p>
             </div>
             
-            <p className="text-gray-600 text-sm leading-relaxed mb-6 flex-grow">
+            <p className="text-gray-600 text-sm leading-relaxed mb-6 flex-grow line-clamp-3">
                 {project.description}
             </p>
 
-            <div className="space-y-4">
+            <div className="flex flex-wrap gap-2 mt-auto">
+                {project.tags.slice(0, 3).map(tag => (
+                    <span key={tag} className="text-xs px-2 py-1 bg-gray-50 text-gray-600 rounded border border-gray-100">
+                        {tag}
+                    </span>
+                ))}
+            </div>
+        </div>
+    </div>
+);
+
+const ProjectDetail = ({ project, onBack }) => (
+    <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+        {/* Detail Header */}
+        <div className="bg-gray-50 border-b border-gray-100 py-12 md:py-20">
+            <div className="max-w-4xl mx-auto px-6">
+                <button 
+                    onClick={onBack}
+                    className="mb-8 flex items-center gap-2 text-sm text-gray-500 hover:text-black transition-colors"
+                >
+                    <ArrowLeft size={16} />
+                    Back to Portfolio
+                </button>
+                
+                <div className="mb-6 flex items-center gap-3">
+                    <span className={`text-xs font-bold px-3 py-1 rounded-full bg-white border border-gray-200 ${project.category === 'Engineering' ? 'text-blue-600' : 'text-purple-600'}`}>
+                        {project.category}
+                    </span>
+                    <span className="text-sm text-gray-500 font-medium uppercase tracking-wide">
+                        {project.subtitle}
+                    </span>
+                </div>
+
+                <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6 leading-tight">
+                    {project.title}
+                </h1>
+
                 <div className="flex flex-wrap gap-2">
-                    {project.tags.slice(0, 3).map(tag => (
-                        <span key={tag} className="text-xs px-2 py-1 bg-gray-50 text-gray-600 rounded border border-gray-100">
+                    {project.tags.map(tag => (
+                        <span key={tag} className="px-3 py-1 bg-white border border-gray-200 text-gray-600 rounded-md text-sm">
                             {tag}
                         </span>
                     ))}
                 </div>
+            </div>
+        </div>
+
+        {/* Content */}
+        <div className="max-w-4xl mx-auto px-6 py-16">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
                 
-                <div className="pt-4 border-t border-gray-50">
-                    <p className="text-xs font-semibold text-gray-900">
-                        <span className="text-gray-400 font-normal">Outcome: </span> 
-                        {project.outcome}
-                    </p>
+                {/* Visual Placeholder (Left Column) */}
+                <div className="md:col-span-1">
+                     <div className="bg-gray-100 rounded-xl aspect-square flex items-center justify-center border border-gray-200 sticky top-24">
+                        <div className="text-center p-6">
+                            <div className="text-gray-300 mb-4 flex justify-center">{project.icon}</div>
+                            <p className="text-sm text-gray-400">Project Gallery Placeholder</p>
+                        </div>
+                     </div>
+                </div>
+
+                {/* Text Content (Right Column) */}
+                <div className="md:col-span-2 space-y-12">
+                    
+                    <div>
+                        <h3 className="text-xl font-bold text-gray-900 mb-3 flex items-center gap-2">
+                            What?
+                        </h3>
+                        <p className="text-gray-600 leading-relaxed text-lg">
+                            {project.what}
+                        </p>
+                    </div>
+
+                    <div>
+                        <h3 className="text-xl font-bold text-gray-900 mb-3 flex items-center gap-2">
+                            How?
+                        </h3>
+                        <p className="text-gray-600 leading-relaxed text-lg">
+                            {project.how}
+                        </p>
+                    </div>
+
+                    <div className="bg-blue-50 p-6 rounded-xl border border-blue-100">
+                        <h3 className="text-lg font-bold text-blue-900 mb-2">
+                            Outcomes
+                        </h3>
+                        <p className="text-blue-800 leading-relaxed">
+                            {project.outcome}
+                        </p>
+                    </div>
+
                 </div>
             </div>
         </div>
