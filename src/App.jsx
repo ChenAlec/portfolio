@@ -1,15 +1,36 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Github, Linkedin, Mail, FileText, Box, Cpu, PenTool, X, ChevronRight, Menu, ArrowLeft, ExternalLink, Check } from 'lucide-react';
+import { Github, Linkedin, Mail, FileText, Box, Cpu, PenTool, X, ChevronRight, Menu, ArrowLeft, ExternalLink, Check, Camera, Image as ImageIcon, PlayCircle, Film } from 'lucide-react';
 
 /**
  * UTILITY: Helper to resolve image paths for GitHub Pages
- * This ensures paths are relative so they work in subdirectories (like /repo-name/)
  */
 const resolvePath = (path) => {
     if (!path) return undefined;
     if (path.startsWith('http')) return path;
-    // Removes leading slash to make path relative to the current URL (the repo root)
     return path.startsWith('/') ? path.slice(1) : path;
+};
+
+/**
+ * UTILITY: Helper to convert standard YouTube links to Embed links
+ * Allows user to paste "https://www.youtube.com/watch?v=..." directly
+ */
+const getYouTubeEmbedUrl = (url) => {
+    if (!url) return undefined;
+    
+    // Handle standard watch URLs (e.g. https://www.youtube.com/watch?v=VIDEO_ID)
+    if (url.includes('watch?v=')) {
+        const videoId = url.split('watch?v=')[1].split('&')[0];
+        return `https://www.youtube.com/embed/${videoId}`;
+    }
+    
+    // Handle short URLs (e.g. https://youtu.be/VIDEO_ID)
+    if (url.includes('youtu.be/')) {
+        const videoId = url.split('youtu.be/')[1].split('?')[0];
+        return `https://www.youtube.com/embed/${videoId}`;
+    }
+    
+    // Return as is if it's already an embed link or another source
+    return url;
 };
 
 /**
@@ -156,6 +177,7 @@ const ThreeCanvas = () => {
  * DATA: Portfolio Projects
  */
 const projects = [
+    // --- ENGINEERING PROJECTS ---
     {
         id: 'cnc',
         category: 'Engineering',
@@ -176,11 +198,7 @@ const projects = [
         ],
         tags: ['SolidWorks', 'Mechatronics', 'Design for Assembly'],
         icon: <Cpu className="w-6 h-6" />,
-        images: [
-            '/images/cnc-1.jpg',
-            '/images/cnc-2.jpg',
-            '/images/cnc-3.jpg'
-        ]
+        images: ['/images/cnc-1.jpg', '/images/cnc-2.jpg', '/images/cnc-3.jpg']
     },
     {
         id: 'ir-holder',
@@ -204,11 +222,7 @@ const projects = [
         ],
         tags: ['Precision Design', '3D Printing', 'Fixture Design'],
         icon: <Cpu className="w-6 h-6" />,
-        images: [
-            '/images/ir-holder-1.jpg',
-            '/images/ir-holder-2.jpg',
-            '/images/ir-holder-3.jpg'
-        ]
+        images: ['/images/ir-holder-1.jpg', '/images/ir-holder-2.jpg', '/images/ir-holder-3.jpg']
     },
     {
         id: 'chess-board',
@@ -232,15 +246,11 @@ const projects = [
         ],
         tags: ['Electronics', 'OnShape', 'Firmware', 'FastLED'],
         icon: <Cpu className="w-6 h-6" />,
-        images: [
-            '/images/chess-board-1.jpg',
-            '/images/chess-board-2.jpg',
-            '/images/chess-board-3.jpg'
-        ]
+        images: ['/images/chess-board-1.jpg', '/images/chess-board-2.jpg', '/images/chess-board-3.jpg']
     },
     {
         id: 'keyboard',
-        category: 'Creative',
+        category: 'Engineering',
         title: '3x3 Custom Keyboard',
         subtitle: 'Personal Project',
         description: 'Macro-pad designed to optimize SolidWorks workflow.',
@@ -259,15 +269,11 @@ const projects = [
         ],
         tags: ['KiCad', 'PCB Design', 'Firmware', 'Product Design'],
         icon: <PenTool className="w-6 h-6" />,
-        images: [
-            '/images/macro/macro3.jpg',
-            '/images/macro/macro2.jpg',
-            '/images/macro/macro1.png'
-        ]
+        images: ['/images/macro/macro3.jpg', '/images/macro/macro2.jpg', '/images/macro/macro1.png']
     },
     {
         id: 'frame',
-        category: 'Creative',
+        category: 'Engineering',
         title: 'Smart Digital Frame',
         subtitle: 'Personal Project',
         description: 'A dual-purpose digital photo frame and external monitor.',
@@ -286,15 +292,11 @@ const projects = [
         ],
         tags: ['Python', 'Woodworking', 'IoT', 'Raspberry Pi'],
         icon: <PenTool className="w-6 h-6" />,
-        images: [
-            '/images/frame-1.jpg',
-            '/images/frame-2.jpg',
-            '/images/frame-3.jpg'
-        ]
+        images: ['/images/frame-1.jpg', '/images/frame-2.jpg', '/images/frame-3.jpg']
     },
     {
         id: 'airpods',
-        category: 'Creative',
+        category: 'Engineering',
         title: 'AirPods Dock',
         subtitle: 'Personal Project',
         description: 'Print-in-place charging dock mechanism designed for intuitive use.',
@@ -312,15 +314,11 @@ const projects = [
         ],
         tags: ['Mechanism Design', 'Rapid Prototyping', 'Thingiverse'],
         icon: <PenTool className="w-6 h-6" />,
-        images: [
-            '/images/airpods-1.jpg',
-            '/images/airpods-2.jpg',
-            '/images/airpods-3.jpg'
-        ]
+        images: ['/images/airpods-1.jpg', '/images/airpods-2.jpg', '/images/airpods-3.jpg']
     },
     {
         id: 'chess-pieces',
-        category: 'Creative',
+        category: 'Engineering',
         title: 'Poly Chess Pieces',
         subtitle: 'Spark! Design Team',
         description: 'Low-poly aesthetic chess pieces designed to house internal magnets.',
@@ -339,15 +337,11 @@ const projects = [
         ],
         tags: ['Blender', 'Surface Modelling', 'Rendering'],
         icon: <PenTool className="w-6 h-6" />,
-        images: [
-            '/images/chess-pieces-1.jpg',
-            '/images/chess-pieces-2.jpg',
-            '/images/chess-pieces-3.jpg'
-        ]
+        images: ['/images/chess-pieces-1.jpg', '/images/chess-pieces-2.jpg', '/images/chess-pieces-3.jpg']
     },
      {
         id: 'hair-dryer',
-        category: 'Creative',
+        category: 'Engineering',
         title: 'Hair Dryer Holder',
         subtitle: 'Personal Project',
         description: 'Minimalist bathroom organizer designed for support-free 3D printing.',
@@ -365,48 +359,141 @@ const projects = [
         ],
         tags: ['Consumer Goods', 'FDM Printing', 'Optimization'],
         icon: <PenTool className="w-6 h-6" />,
-        images: [
-            '/images/hair-dryer-1.jpg',
-            '/images/hair-dryer-2.jpg',
-            '/images/hair-dryer-3.jpg'
-        ]
+        images: ['/images/hair-dryer-1.jpg', '/images/hair-dryer-2.jpg', '/images/hair-dryer-3.jpg']
     },
+
+    // --- OTHER PROJECTS (CREATIVE / VIDEO) ---
+    {
+        id: 'stop-motion',
+        category: 'Other',
+        title: 'Stop Motion Animation',
+        subtitle: 'Creative Project',
+        description: 'A frame-by-frame storytelling experience using physical mediums.',
+        what: [
+            "Created a short stop-motion film utilizing physical objects and lighting techniques.",
+            "Explored the principles of animation including timing, spacing, and squash-and-stretch."
+        ],
+        how: [
+            "Set up a consistent lighting rig to ensure continuity between frames.",
+            "Captured hundreds of individual photos and sequenced them using editing software."
+        ],
+        outcome: [
+            "Produced a fluid animation that brings inanimate objects to life."
+        ],
+        tags: ['Animation', 'Photography', 'Storytelling'],
+        icon: <Film className="w-6 h-6" />,
+        video: 'https://www.youtube.com/watch?v=example', // Paste your standard YouTube link here
+        images: [] 
+    },
+    {
+        id: 'bc-zoom',
+        category: 'Other',
+        title: 'BC ZOOM Film Festival',
+        subtitle: 'Short Film Entry',
+        description: 'An award-winning short film created for the BC ZOOM Film Festival.',
+        what: [
+            "Wrote, directed, and edited a short film under strict time constraints.",
+            "Focused on narrative structure and visual storytelling."
+        ],
+        how: [
+            "Coordinated a small team of actors and crew members.",
+            "Utilized Premiere Pro for color grading and sound design."
+        ],
+        outcome: [
+            "Showcased at the festival and received positive reception for cinematography."
+        ],
+        tags: ['Filmmaking', 'Directing', 'Editing'],
+        icon: <Film className="w-6 h-6" />,
+        video: 'https://www.youtube.com/watch?v=5S_dVFsq-CY&t=1s', // Paste your standard YouTube link here
+        images: [] 
+    },
+    {
+        id: 'blender-anim',
+        category: 'Other',
+        title: 'Blender Animations',
+        subtitle: '3D Motion Graphics',
+        description: 'Experimental 3D animations focusing on physics simulations and lighting.',
+        what: [
+            "Created looping 3D animations to explore Blender's physics engine.",
+            "Focused on satisfying motion and realistic material rendering."
+        ],
+        how: [
+            "Modeled assets in Blender and applied procedural textures.",
+            "Simulated rigid body dynamics and cloth physics."
+        ],
+        outcome: [
+            "A series of high-quality renders demonstrating proficiency in 3D animation pipelines."
+        ],
+        tags: ['Blender', '3D Animation', 'Rendering'],
+        icon: <Box className="w-6 h-6" />,
+        video: 'https://www.youtube.com/watch?v=example', // Paste your standard YouTube link here
+        images: [] 
+    },
+    {
+        id: 'batarang',
+        category: 'Other',
+        title: 'Custom 3D Rendered Batarang',
+        subtitle: 'Prop Design',
+        description: 'A photorealistic render of a custom-designed Batarang prop.',
+        what: [
+            "Designed a stylized Batarang inspired by various comic book iterations.",
+            "Aimed for a gritty, realistic metal aesthetic."
+        ],
+        how: [
+            "Modeled the hard-surface geometry in Blender.",
+            "Used substance painting techniques to add scratches, wear, and surface imperfections."
+        ],
+        outcome: [
+            "High-fidelity 4K renders suitable for portfolio display."
+        ],
+        tags: ['3D Modeling', 'Texturing', 'Prop Design'],
+        icon: <PenTool className="w-6 h-6" />,
+        video: '', 
+        images: ['/images/batarang-1.jpg'] 
+    }
+];
+
+/**
+ * DATA: Photography Placeholder
+ */
+const photos = [
+    { id: 1, src: '/images/photo/1.jpg', alt: 'Photography Shot 1', caption: 'Urban Exploration' },
+    { id: 2, src: '/images/photo/2.jpg', alt: 'Photography Shot 2', caption: 'Nature' },
+    { id: 3, src: '/images/photo/3.jpg', alt: 'Photography Shot 3', caption: 'Architecture' },
+    { id: 4, src: '/images/photo/4.jpg', alt: 'Photography Shot 4', caption: 'Portrait' },
+    { id: 5, src: '/images/photo/5.jpg', alt: 'Photography Shot 5', caption: 'Night Life' },
+    { id: 6, src: '/images/photo/6.jpg', alt: 'Photography Shot 6', caption: 'Street' },
 ];
 
 const App = () => {
-  const [activeTab, setActiveTab] = useState('all');
   const [activeSection, setActiveSection] = useState('home');
-  const [selectedProject, setSelectedProject] = useState(null); // New state for project details
+  const [selectedProject, setSelectedProject] = useState(null); 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [emailCopied, setEmailCopied] = useState(false);
 
   const engineeringProjects = projects.filter(p => p.category === 'Engineering');
-  const creativeProjects = projects.filter(p => p.category === 'Creative');
+  const otherProjects = projects.filter(p => p.category === 'Other');
 
   const handleNavClick = (section) => {
     setActiveSection(section);
-    setSelectedProject(null); // Reset selection when navigating via menu
+    setSelectedProject(null); 
     setIsMobileMenuOpen(false);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleCopyEmail = () => {
     const email = "thealec.chen@mail.utoronto.ca";
-    
-    // Create temporary textarea to handle copy command
     const textArea = document.createElement("textarea");
     textArea.value = email;
     document.body.appendChild(textArea);
     textArea.select();
-    
     try {
       document.execCommand('copy');
       setEmailCopied(true);
-      setTimeout(() => setEmailCopied(false), 2000); // Reset after 2 seconds
+      setTimeout(() => setEmailCopied(false), 2000);
     } catch (err) {
       console.error('Failed to copy email', err);
     }
-    
     document.body.removeChild(textArea);
   };
 
@@ -424,7 +511,7 @@ const App = () => {
       
       {/* Navigation */}
       <nav className="fixed top-0 w-full bg-white/80 backdrop-blur-md z-50 border-b border-gray-100">
-        <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
           <div 
             className="font-bold text-xl tracking-tight flex items-center gap-2 cursor-pointer"
             onClick={() => handleNavClick('home')}
@@ -436,7 +523,9 @@ const App = () => {
           {/* Desktop Nav */}
           <div className="hidden md:flex items-center gap-8">
             <NavLink to="home" label="Home" />
-            <NavLink to="portfolio" label="Portfolio" />
+            <NavLink to="engineering" label="Engineering" />
+            <NavLink to="photography" label="Photography" />
+            <NavLink to="other" label="Other Projects" />
             <NavLink to="contact" label="Contact" />
           </div>
 
@@ -449,9 +538,11 @@ const App = () => {
         {/* Mobile Menu */}
         {isMobileMenuOpen && (
              <div className="md:hidden absolute w-full bg-white border-b px-6 py-4 flex flex-col gap-4 shadow-lg">
-                <button onClick={() => handleNavClick('home')} className="text-left font-medium text-gray-600">Home</button>
-                <button onClick={() => handleNavClick('portfolio')} className="text-left font-medium text-gray-600">Portfolio</button>
-                <button onClick={() => handleNavClick('contact')} className="text-left font-medium text-gray-600">Contact</button>
+                <button onClick={() => handleNavClick('home')} className="text-left font-medium text-gray-600 py-2">Home</button>
+                <button onClick={() => handleNavClick('engineering')} className="text-left font-medium text-gray-600 py-2">Engineering</button>
+                <button onClick={() => handleNavClick('photography')} className="text-left font-medium text-gray-600 py-2">Photography</button>
+                <button onClick={() => handleNavClick('other')} className="text-left font-medium text-gray-600 py-2">Other Projects</button>
+                <button onClick={() => handleNavClick('contact')} className="text-left font-medium text-gray-600 py-2">Contact</button>
              </div>
         )}
       </nav>
@@ -462,11 +553,8 @@ const App = () => {
         {/* SECTION: HOME */}
         {activeSection === 'home' && (
             <div className="relative">
-                {/* Hero / 3D Viewer */}
                 <div className="h-[80vh] w-full relative overflow-hidden bg-gray-50 flex items-center justify-center">
-                    
                     <ThreeCanvas />
-                    
                     <div className="absolute inset-0 flex flex-col justify-center items-start max-w-6xl mx-auto px-6 pointer-events-none">
                         <div className="bg-white/90 backdrop-blur-sm p-8 rounded-2xl shadow-sm border border-gray-100 pointer-events-auto max-w-lg">
                             <span className="text-blue-600 font-semibold tracking-wider text-sm mb-2 block">MECHANICAL ENGINEER</span>
@@ -479,12 +567,11 @@ const App = () => {
                             </p>
                             <div className="flex gap-3">
                                 <button 
-                                    onClick={() => handleNavClick('portfolio')}
+                                    onClick={() => handleNavClick('engineering')}
                                     className="bg-gray-900 text-white px-6 py-3 rounded-lg font-medium hover:bg-gray-800 transition-colors"
                                 >
-                                    View Projects
+                                    View Engineering
                                 </button>
-                                
                                 <a 
                                     href={resolvePath('/resume.pdf')}
                                     target="_blank"
@@ -492,17 +579,15 @@ const App = () => {
                                     className="bg-white text-gray-900 border border-gray-200 px-6 py-3 rounded-lg font-medium hover:bg-gray-50 transition-colors flex items-center gap-2"
                                 >
                                     <FileText size={18} />
-                                    Resume
+                                    View Resume
                                 </a>
                             </div>
                         </div>
                     </div>
-                    
                     <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce text-gray-400">
                        <ChevronRight className="rotate-90 w-6 h-6" />
                     </div>
                 </div>
-
                 <section className="py-24 bg-white">
                     <div className="max-w-4xl mx-auto px-6 text-center">
                         <h2 className="text-3xl font-bold mb-8">About Me</h2>
@@ -516,52 +601,17 @@ const App = () => {
             </div>
         )}
 
-        {/* SECTION: PORTFOLIO */}
-        {activeSection === 'portfolio' && (
+        {/* SECTION: ENGINEERING */}
+        {activeSection === 'engineering' && (
             <div className="min-h-screen">
-                {/* CONDITIONAL RENDERING: Grid vs Detail */}
                 {!selectedProject ? (
-                    // GRID VIEW
                     <div className="max-w-6xl mx-auto px-6 py-12">
-                        <div className="flex flex-col md:flex-row justify-between items-end mb-12 border-b border-gray-100 pb-6">
-                            <div>
-                                <h1 className="text-4xl font-bold mb-2">Selected Works</h1>
-                                <p className="text-gray-500">A curation of engineering challenges and creative explorations.</p>
-                            </div>
-                            <div className="flex gap-2 mt-4 md:mt-0">
-                                <button 
-                                    onClick={() => setActiveTab('all')} 
-                                    className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${activeTab === 'all' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
-                                >
-                                    All
-                                </button>
-                                <button 
-                                    onClick={() => setActiveTab('eng')} 
-                                    className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${activeTab === 'eng' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
-                                >
-                                    Engineering
-                                </button>
-                                <button 
-                                    onClick={() => setActiveTab('creative')} 
-                                    className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${activeTab === 'creative' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
-                                >
-                                    Creative
-                                </button>
-                            </div>
+                        <div className="mb-12 border-b border-gray-100 pb-6">
+                            <h1 className="text-4xl font-bold mb-2">Engineering</h1>
+                            <p className="text-gray-500">Technical challenges, mechatronics, and precision design.</p>
                         </div>
-
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                            {(activeTab === 'all' || activeTab === 'eng') && engineeringProjects.map((project) => (
-                                <ProjectCard 
-                                    key={project.id} 
-                                    project={project} 
-                                    onClick={() => {
-                                        setSelectedProject(project);
-                                        window.scrollTo({ top: 0, behavior: 'smooth' });
-                                    }}
-                                />
-                            ))}
-                            {(activeTab === 'all' || activeTab === 'creative') && creativeProjects.map((project) => (
+                            {engineeringProjects.map((project) => (
                                 <ProjectCard 
                                     key={project.id} 
                                     project={project} 
@@ -574,9 +624,80 @@ const App = () => {
                         </div>
                     </div>
                 ) : (
-                    // DETAIL VIEW
                     <ProjectDetail project={selectedProject} onBack={() => setSelectedProject(null)} />
                 )}
+            </div>
+        )}
+
+        {/* SECTION: OTHER PROJECTS */}
+        {activeSection === 'other' && (
+            <div className="min-h-screen">
+                {!selectedProject ? (
+                    <div className="max-w-6xl mx-auto px-6 py-12">
+                        <div className="mb-12 border-b border-gray-100 pb-6">
+                            <h1 className="text-4xl font-bold mb-2">Other Projects</h1>
+                            <p className="text-gray-500">Creative explorations, film, and animation.</p>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                            {otherProjects.map((project) => (
+                                <ProjectCard 
+                                    key={project.id} 
+                                    project={project} 
+                                    onClick={() => {
+                                        setSelectedProject(project);
+                                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                                    }}
+                                />
+                            ))}
+                        </div>
+                    </div>
+                ) : (
+                    <ProjectDetail project={selectedProject} onBack={() => setSelectedProject(null)} />
+                )}
+            </div>
+        )}
+
+        {/* SECTION: PHOTOGRAPHY */}
+        {activeSection === 'photography' && (
+            <div className="min-h-screen bg-white">
+                <div className="max-w-6xl mx-auto px-6 py-12">
+                    <div className="mb-12 border-b border-gray-100 pb-6 flex justify-between items-end">
+                        <div>
+                            <h1 className="text-4xl font-bold mb-2">Photography</h1>
+                            <p className="text-gray-500">A collection of moments and perspectives.</p>
+                        </div>
+                        <Camera className="text-gray-300 w-8 h-8" />
+                    </div>
+                    
+                    {/* Masonry-like Grid for Photos */}
+                    <div className="columns-1 md:columns-2 lg:columns-3 gap-4 space-y-4">
+                        {photos.map((photo) => (
+                            <div key={photo.id} className="break-inside-avoid group relative rounded-xl overflow-hidden bg-gray-100">
+                                <img 
+                                    src={resolvePath(photo.src)} 
+                                    alt={photo.alt}
+                                    className="w-full h-auto object-cover transition-transform duration-700 group-hover:scale-105"
+                                    onError={(e) => {
+                                        e.target.style.display = 'none'; 
+                                        e.target.nextSibling.style.display = 'flex'; // Show placeholder
+                                    }}
+                                />
+                                {/* Placeholder if image fails */}
+                                <div className="hidden absolute inset-0 bg-gray-100 flex-col items-center justify-center text-gray-300 p-8 text-center min-h-[200px]">
+                                    <ImageIcon size={32} className="mb-2" />
+                                    <span className="text-sm">Image Placeholder<br/>{photo.src}</span>
+                                </div>
+                                
+                                {/* Hover Overlay */}
+                                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300 flex items-end p-4 opacity-0 group-hover:opacity-100">
+                                    <p className="text-white font-medium text-sm backdrop-blur-sm px-3 py-1 rounded-full bg-black/30">
+                                        {photo.caption}
+                                    </p>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
             </div>
         )}
 
@@ -588,7 +709,6 @@ const App = () => {
                     I'm currently looking for opportunities in product design and mechanical engineering. 
                     If you have a project in mind or just want to chat about custom keyboards, feel free to reach out.
                 </p>
-                
                 <div className="flex flex-col md:flex-row gap-6 mb-16">
                     <button 
                         onClick={handleCopyEmail}
@@ -701,50 +821,58 @@ const ProjectDetail = ({ project, onBack }) => (
             
             {/* Title Block */}
             <div className="mb-12 max-w-3xl">
-                <span className={`text-xs font-bold px-3 py-1 rounded-full border mb-4 inline-block ${project.category === 'Engineering' ? 'bg-blue-50 border-blue-100 text-blue-600' : 'bg-purple-50 border-purple-100 text-purple-600'}`}>
-                    {project.category}
-                </span>
+                {/* Category Tag Removed as requested */}
                 <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-2 leading-tight">
                     {project.title}
                 </h1>
                 <p className="text-xl text-gray-500 font-medium">{project.subtitle}</p>
             </div>
 
-            {/* BENTO GRID IMAGES - Main Visual Focus */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-16">
-                
-                {/* Main Image */}
-                <div className="md:col-span-2 aspect-video bg-gray-100 rounded-2xl overflow-hidden border border-gray-100 shadow-sm">
-                    {project.images && project.images[0] ? (
-                        <img src={resolvePath(project.images[0])} alt="Main View" className="w-full h-full object-cover" />
-                    ) : (
-                        <div className="w-full h-full flex items-center justify-center text-gray-300">
-                            {project.icon}
-                        </div>
-                    )}
+            {/* MEDIA SECTION: Video or Grid */}
+            {project.video ? (
+                <div className="mb-16 aspect-video rounded-2xl overflow-hidden border border-gray-100 shadow-sm bg-black">
+                    <iframe 
+                        className="w-full h-full"
+                        src={getYouTubeEmbedUrl(project.video)} 
+                        title={project.title} 
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                        allowFullScreen
+                    ></iframe>
                 </div>
+            ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-16">
+                    {/* Main Image */}
+                    <div className="md:col-span-2 aspect-video bg-gray-100 rounded-2xl overflow-hidden border border-gray-100 shadow-sm">
+                        {project.images && project.images[0] ? (
+                            <img src={resolvePath(project.images[0])} alt="Main View" className="w-full h-full object-cover" />
+                        ) : (
+                            <div className="w-full h-full flex items-center justify-center text-gray-300">
+                                {project.icon}
+                            </div>
+                        )}
+                    </div>
 
-                {/* Secondary Images */}
-                <div className="aspect-video bg-gray-100 rounded-2xl overflow-hidden border border-gray-100 shadow-sm">
-                    {project.images && project.images[1] ? (
-                        <img src={resolvePath(project.images[1])} alt="Detail View 1" className="w-full h-full object-cover" />
-                    ) : (
-                        <div className="w-full h-full flex items-center justify-center text-gray-300 text-sm">Detail Shot 1</div>
-                    )}
+                    {/* Secondary Images */}
+                    <div className="aspect-video bg-gray-100 rounded-2xl overflow-hidden border border-gray-100 shadow-sm">
+                        {project.images && project.images[1] ? (
+                            <img src={resolvePath(project.images[1])} alt="Detail View 1" className="w-full h-full object-cover" />
+                        ) : (
+                            <div className="w-full h-full flex items-center justify-center text-gray-300 text-sm">Detail Shot 1</div>
+                        )}
+                    </div>
+
+                    <div className="aspect-video bg-gray-100 rounded-2xl overflow-hidden border border-gray-100 shadow-sm">
+                        {project.images && project.images[2] ? (
+                            <img src={resolvePath(project.images[2])} alt="Detail View 2" className="w-full h-full object-cover" />
+                        ) : (
+                            <div className="w-full h-full flex items-center justify-center text-gray-300 text-sm">Detail Shot 2</div>
+                        )}
+                    </div>
                 </div>
+            )}
 
-                <div className="aspect-video bg-gray-100 rounded-2xl overflow-hidden border border-gray-100 shadow-sm">
-                    {project.images && project.images[2] ? (
-                        <img src={resolvePath(project.images[2])} alt="Detail View 2" className="w-full h-full object-cover" />
-                    ) : (
-                        <div className="w-full h-full flex items-center justify-center text-gray-300 text-sm">Detail Shot 2</div>
-                    )}
-                </div>
-            </div>
-
-            {/* Project Content - Centered & Stacked */}
+            {/* Project Content */}
             <div className="max-w-3xl mx-auto space-y-16">
-                
                 <div className="space-y-4">
                     <h3 className="text-xl font-bold text-gray-900">What?</h3>
                      <ul className="list-disc list-outside ml-4 space-y-2 text-lg text-gray-600 leading-relaxed">
@@ -753,7 +881,6 @@ const ProjectDetail = ({ project, onBack }) => (
                         ))}
                     </ul>
                 </div>
-
                 <div className="space-y-4">
                     <h3 className="text-xl font-bold text-gray-900">How?</h3>
                      <ul className="list-disc list-outside ml-4 space-y-2 text-lg text-gray-600 leading-relaxed">
@@ -762,7 +889,6 @@ const ProjectDetail = ({ project, onBack }) => (
                         ))}
                     </ul>
                 </div>
-
                 <div className="space-y-4">
                     <h3 className="text-xl font-bold text-gray-900">Outcome</h3>
                      <div className="bg-gray-50 p-6 rounded-xl border border-gray-100">
@@ -773,7 +899,6 @@ const ProjectDetail = ({ project, onBack }) => (
                         </ul>
                     </div>
                 </div>
-
             </div>
         </div>
     </div>
