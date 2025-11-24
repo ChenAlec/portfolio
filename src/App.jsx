@@ -143,7 +143,8 @@ const ThreeCanvas = () => {
 
 /**
  * DATA: Portfolio Projects
- * Expanded with 'what' and 'how' fields for the detail view.
+ * UPDATED: Added 'image' property to each project.
+ * IMPORTANT: Ensure you add these files to your /public/images/ folder.
  */
 const projects = [
     {
@@ -156,7 +157,8 @@ const projects = [
         how: 'Researched components to optimize for cost-efficiency and performance based on design specifications. Developed and delivered Google Slides to communicate key design features and trade-offs, effectively securing approval during engineering design briefing.',
         outcome: 'Designed and modelled a custom CNC router with 229 parts and 400+ mates in SolidWorks. Created a comprehensive design report, including engineering specifications, component justification and a bill of materials.',
         tags: ['SolidWorks', 'Mechatronics', 'Design for Assembly'],
-        icon: <Cpu className="w-6 h-6" />
+        icon: <Cpu className="w-6 h-6" />,
+        image: '/images/cnc.jpg' // PLACEHOLDER: Update filename
     },
     {
         id: 'ir-holder',
@@ -168,7 +170,8 @@ const projects = [
         how: 'Designed a cap with standardized Sony threads to mount lens filter onto IR Camera. Measured mounting hole dimensions on DED machine for design. Created fixture to combine IR camera with linear guide which was mounted to the DED machine.',
         outcome: 'IR camera now has 50+mm of travel along the Z-axis for focusing. IR camera is stable, with less than 2mm of wobble when secured. Net print time of under 2 hours on the Prusa i3 mk3s+.',
         tags: ['Precision Design', '3D Printing', 'Fixture Design'],
-        icon: <Cpu className="w-6 h-6" />
+        icon: <Cpu className="w-6 h-6" />,
+        image: '/images/ir-holder.jpg' // PLACEHOLDER
     },
     {
         id: 'chess-board',
@@ -180,7 +183,8 @@ const projects = [
         how: 'Designed a system with three layers: a topper that connected to other toppers and prevented light bleed to other positions, a diffusion layer and a layer for holding LED strips. Used OnShape to prototype and test 10+ iterations during the design process. Tested light diffusion using the FastLED Arduino library.',
         outcome: 'Designed and manufactured a LED-embedded chessboard with a thickness of 7.7mm and a deflection of less than 2mm. Chessboard contains 1024+ LEDS with little to no light diffusing between the grids.',
         tags: ['Electronics', 'OnShape', 'Firmware', 'FastLED'],
-        icon: <Cpu className="w-6 h-6" />
+        icon: <Cpu className="w-6 h-6" />,
+        image: '/images/chess-board.jpg' // PLACEHOLDER
     },
     {
         id: 'keyboard',
@@ -192,7 +196,8 @@ const projects = [
         how: 'Designed a 3D-printed enclosure with heat inserts to mount a microcontroller, rotary encoder, and OLED screen. Designed and ordered a custom PCB for the switches using KICAD. Developed custom firmware for communication between components.',
         outcome: 'Created a custom macropad with 39+ programmable functions. Gained end-to-end product design experience, from CAD modelling to electronics integration and firmware development.',
         tags: ['KiCad', 'PCB Design', 'Firmware', 'Product Design'],
-        icon: <PenTool className="w-6 h-6" />
+        icon: <PenTool className="w-6 h-6" />,
+        image: '/images/macro/macro3.jpg' // PLACEHOLDER
     },
     {
         id: 'frame',
@@ -204,7 +209,8 @@ const projects = [
         how: 'Researched and learned how to woodwork with hand drills and saws to create the enclosure. Learned Python to adapt and debug scripts from GitHub. Created an enclosure that integrated a Raspberry Pi, cooling fan, 11" monitor, HDMI switcher, and monitor control board.',
         outcome: 'Digital photo frame with 32GB of expandable storage using USB ports. Photo frame features can be controlled by connecting the phone to the local network.',
         tags: ['Python', 'Woodworking', 'IoT', 'Raspberry Pi'],
-        icon: <PenTool className="w-6 h-6" />
+        icon: <PenTool className="w-6 h-6" />,
+        image: '/images/frame.jpg' // PLACEHOLDER
     },
     {
         id: 'airpods',
@@ -216,7 +222,8 @@ const projects = [
         how: 'Researched and developed a print-in-place mechanism so that the entire part can be printed without assembly, despite containing two separate parts. Designed and modelled 2 prototypes to ensure perfect fit for Magsafe Charger and Airpods.',
         outcome: 'My AirPods have always been charged before leaving the house for the past 6 months. All relevant files and print instructions are open-source on Thingiverse.',
         tags: ['Mechanism Design', 'Rapid Prototyping', 'Thingiverse'],
-        icon: <PenTool className="w-6 h-6" />
+        icon: <PenTool className="w-6 h-6" />,
+        image: '/images/airpods.jpg' // PLACEHOLDER
     },
     {
         id: 'chess-pieces',
@@ -228,7 +235,8 @@ const projects = [
         how: 'Designed and modelled the chess pieces in Blender. Created renders of the design in Blender for marketing purposes. Created a Blender to SolidWorks workflow to utilize both organic modelling and technical refinement across both software tools. Designed a 3D printable clip-on cover and magnet slots within SolidWorks.',
         outcome: 'Marketing renders and functional magnetic prototypes.',
         tags: ['Blender', 'Surface Modelling', 'Rendering'],
-        icon: <PenTool className="w-6 h-6" />
+        icon: <PenTool className="w-6 h-6" />,
+        image: '/images/chess-pieces.jpg' // PLACEHOLDER
     },
      {
         id: 'hair-dryer',
@@ -240,7 +248,8 @@ const projects = [
         how: 'Measured and modelled hair dryer to test fitting within a SolidWorks Assembly. Strategically designed model to ensure no supports were needed, thus saving filament and keeping print times low.',
         outcome: 'Space beside bathroom sink is now 50% less cluttered. Project received positive feedback, with 47 likes and 8 saves on Thingiverse.',
         tags: ['Consumer Goods', 'FDM Printing', 'Optimization'],
-        icon: <PenTool className="w-6 h-6" />
+        icon: <PenTool className="w-6 h-6" />,
+        image: '/images/hair-dryer.jpg' // PLACEHOLDER
     },
 ];
 
@@ -474,11 +483,20 @@ const ProjectCard = ({ project, onClick }) => (
         className="group bg-white rounded-xl border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1 flex flex-col h-full cursor-pointer"
     >
         <div className="h-48 bg-gray-100 relative overflow-hidden flex items-center justify-center group-hover:bg-blue-50 transition-colors">
-            <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#000000_1px,transparent_1px)] [background-size:16px_16px]"></div>
-            
-            <div className="text-gray-300 group-hover:text-blue-500 transition-colors duration-500 transform group-hover:scale-110">
-                {project.icon}
-            </div>
+            {project.image ? (
+                <img 
+                    src={project.image} 
+                    alt={project.title} 
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                />
+            ) : (
+                <>
+                    <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#000000_1px,transparent_1px)] [background-size:16px_16px]"></div>
+                    <div className="text-gray-300 group-hover:text-blue-500 transition-colors duration-500 transform group-hover:scale-110">
+                        {project.icon}
+                    </div>
+                </>
+            )}
             
             <div className="absolute bottom-3 left-3">
                  <span className={`text-xs font-bold px-2 py-1 rounded bg-white/80 backdrop-blur-sm border border-gray-100 ${project.category === 'Engineering' ? 'text-blue-600' : 'text-purple-600'}`}>
@@ -552,13 +570,23 @@ const ProjectDetail = ({ project, onBack }) => (
         <div className="max-w-4xl mx-auto px-6 py-16">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
                 
-                {/* Visual Placeholder (Left Column) */}
+                {/* Visual Section (Left Column) */}
                 <div className="md:col-span-1">
-                     <div className="bg-gray-100 rounded-xl aspect-square flex items-center justify-center border border-gray-200 sticky top-24">
-                        <div className="text-center p-6">
-                            <div className="text-gray-300 mb-4 flex justify-center">{project.icon}</div>
-                            <p className="text-sm text-gray-400">Project Gallery Placeholder</p>
-                        </div>
+                     <div className="bg-gray-100 rounded-xl aspect-square overflow-hidden border border-gray-200 sticky top-24">
+                        {project.image ? (
+                            <img 
+                                src={project.image} 
+                                alt={project.title} 
+                                className="w-full h-full object-cover"
+                            />
+                        ) : (
+                            <div className="w-full h-full flex items-center justify-center">
+                                <div className="text-center p-6">
+                                    <div className="text-gray-300 mb-4 flex justify-center">{project.icon}</div>
+                                    <p className="text-sm text-gray-400">Project Gallery Placeholder</p>
+                                </div>
+                            </div>
+                        )}
                      </div>
                 </div>
 
