@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react';
-import { Github, Linkedin, Mail, FileText, Box, Cpu, PenTool, Upload, X, ChevronRight, ExternalLink, Menu } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Github, Linkedin, Mail, FileText, Box, Cpu, PenTool, X, ChevronRight, Menu } from 'lucide-react';
 
 /**
  * UTILITY: Script Loader for Three.js
@@ -51,7 +51,7 @@ const useThreeScripts = () => {
 /**
  * COMPONENT: 3D Background / STL Viewer
  */
-const ThreeCanvas = ({ stlFile }) => {
+const ThreeCanvas = () => {
   const containerRef = useRef(null);
   const scriptsLoaded = useThreeScripts();
 
@@ -131,23 +131,10 @@ const ThreeCanvas = ({ stlFile }) => {
         currentMesh = group;
     };
 
-    // Load Content
-    if (stlFile) {
-        const loader = new window.THREE.STLLoader();
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            const contents = e.target.result;
-            const geometry = loader.parse(contents);
-            const mesh = new window.THREE.Mesh(geometry);
-            setupMesh(mesh);
-        };
-        reader.readAsArrayBuffer(stlFile);
-    } else {
-        // Default Abstract Shape (Torus Knot)
-        const geometry = new window.THREE.TorusKnotGeometry(4, 1.2, 128, 32);
-        const mesh = new window.THREE.Mesh(geometry);
-        setupMesh(mesh);
-    }
+    // Default Abstract Shape (Torus Knot)
+    const geometry = new window.THREE.TorusKnotGeometry(4, 1.2, 128, 32);
+    const mesh = new window.THREE.Mesh(geometry);
+    setupMesh(mesh);
 
     // Animation Loop
     const animate = () => {
@@ -177,7 +164,7 @@ const ThreeCanvas = ({ stlFile }) => {
         if (containerRef.current) containerRef.current.innerHTML = '';
         renderer.dispose();
     };
-  }, [scriptsLoaded, stlFile]);
+  }, [scriptsLoaded]);
 
   return (
     <div ref={containerRef} className="w-full h-full absolute inset-0 z-0" />
@@ -270,90 +257,13 @@ const projects = [
     },
 ];
 
-const ResumeSection = () => (
-    <div className="bg-white border border-gray-200 rounded-lg p-8 shadow-sm">
-        <div className="flex justify-between items-start mb-8 border-b pb-4">
-            <div>
-                <h2 className="text-3xl font-bold text-gray-900">Alec Chen</h2>
-                <p className="text-gray-600 text-lg">Mechanical Engineer | University of Toronto</p>
-            </div>
-            <div className="text-right text-sm text-gray-500">
-                <p>thealec.chen@mail.utoronto.ca</p>
-                <p>+1 (778)-991-6826</p>
-                <p>Toronto, ON</p>
-            </div>
-        </div>
-
-        <div className="space-y-8">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <div className="md:col-span-1">
-                    <h3 className="font-bold text-gray-900 uppercase tracking-wider text-sm">Experience</h3>
-                </div>
-                <div className="md:col-span-3 space-y-4">
-                    <div>
-                        <div className="flex justify-between">
-                            <h4 className="font-bold text-gray-900">Mechanical Engineer</h4>
-                            <span className="text-gray-500 text-sm">Present</span>
-                        </div>
-                        <p className="text-gray-600">University of Toronto</p>
-                    </div>
-                </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <div className="md:col-span-1">
-                    <h3 className="font-bold text-gray-900 uppercase tracking-wider text-sm">Skills</h3>
-                </div>
-                <div className="md:col-span-3">
-                    <div className="flex flex-wrap gap-2">
-                        {['SolidWorks', 'OnShape', 'KiCad', 'Python', 'C++', '3D Printing', 'PCB Design', 'Blender', 'Rapid Prototyping'].map(skill => (
-                            <span key={skill} className="px-2 py-1 bg-gray-100 text-gray-700 text-sm rounded">
-                                {skill}
-                            </span>
-                        ))}
-                    </div>
-                </div>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <div className="md:col-span-1">
-                    <h3 className="font-bold text-gray-900 uppercase tracking-wider text-sm">Education</h3>
-                </div>
-                <div className="md:col-span-3">
-                    <h4 className="font-bold text-gray-900">University of Toronto</h4>
-                    <p className="text-gray-600">Mechanical Engineering</p>
-                </div>
-            </div>
-        </div>
-        
-        <div className="mt-8 pt-4 border-t text-center">
-            <button className="text-blue-600 hover:text-blue-800 font-medium inline-flex items-center gap-2">
-                Download Full PDF <ExternalLink size={16} />
-            </button>
-        </div>
-    </div>
-);
-
 const App = () => {
   const [activeTab, setActiveTab] = useState('all');
   const [activeSection, setActiveSection] = useState('home');
-  const [uploadedStl, setUploadedStl] = useState(null);
-  const fileInputRef = useRef(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const engineeringProjects = projects.filter(p => p.category === 'Engineering');
   const creativeProjects = projects.filter(p => p.category === 'Creative');
-
-  const handleFileUpload = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-             setUploadedStl(e.target.result);
-        };
-        reader.readAsArrayBuffer(file);
-    }
-  };
 
   const NavLink = ({ to, label }) => (
     <button 
@@ -383,7 +293,6 @@ const App = () => {
           <div className="hidden md:flex items-center gap-8">
             <NavLink to="home" label="Home" />
             <NavLink to="portfolio" label="Portfolio" />
-            <NavLink to="resume" label="Resume" />
             <NavLink to="contact" label="Contact" />
           </div>
 
@@ -398,7 +307,6 @@ const App = () => {
              <div className="md:hidden absolute w-full bg-white border-b px-6 py-4 flex flex-col gap-4 shadow-lg">
                 <NavLink to="home" label="Home" />
                 <NavLink to="portfolio" label="Portfolio" />
-                <NavLink to="resume" label="Resume" />
                 <NavLink to="contact" label="Contact" />
              </div>
         )}
@@ -414,7 +322,7 @@ const App = () => {
                 <div className="h-[80vh] w-full relative overflow-hidden bg-gray-50 flex items-center justify-center">
                     
                     {/* 3D Background */}
-                    <ThreeCanvas stlFile={uploadedStl} />
+                    <ThreeCanvas />
                     
                     {/* Hero Overlay */}
                     <div className="absolute inset-0 flex flex-col justify-center items-start max-w-6xl mx-auto px-6 pointer-events-none">
@@ -434,27 +342,16 @@ const App = () => {
                                 >
                                     View Projects
                                 </button>
-                                <button 
-                                    onClick={() => fileInputRef.current.click()}
+                                
+                                <a 
+                                    href="/resume.pdf" 
+                                    download="Alec_Chen_Resume.pdf"
                                     className="bg-white text-gray-900 border border-gray-200 px-6 py-3 rounded-lg font-medium hover:bg-gray-50 transition-colors flex items-center gap-2"
                                 >
-                                    <Upload size={18} />
-                                    Visualize STL
-                                </button>
-                                <input 
-                                    type="file" 
-                                    accept=".stl" 
-                                    ref={fileInputRef} 
-                                    className="hidden" 
-                                    onChange={handleFileUpload}
-                                />
+                                    <FileText size={18} />
+                                    Resume
+                                </a>
                             </div>
-                            {uploadedStl && (
-                                <p className="text-xs text-green-600 mt-2 flex items-center gap-1">
-                                    <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-                                    Custom STL Loaded
-                                </p>
-                            )}
                         </div>
                     </div>
                     
@@ -516,20 +413,6 @@ const App = () => {
                         <ProjectCard key={project.id} project={project} />
                     ))}
                 </div>
-            </div>
-        )}
-
-        {/* SECTION: RESUME */}
-        {activeSection === 'resume' && (
-            <div className="max-w-4xl mx-auto px-6 py-12">
-                <div className="flex items-center justify-between mb-8">
-                    <h1 className="text-4xl font-bold">Resume</h1>
-                    <button className="flex items-center gap-2 text-gray-500 hover:text-black transition-colors">
-                        <FileText size={20} />
-                        Download PDF
-                    </button>
-                </div>
-                <ResumeSection />
             </div>
         )}
 
