@@ -250,9 +250,9 @@ const projects = [
         tags: ['KiCad', 'PCB Design', 'Firmware', 'Product Design'],
         icon: <PenTool className="w-6 h-6" />,
         images: [
-            '/images/macro/macro3.jpg',
-            '/images/macro/macro2.jpg',
-            '/images/macro/macro1.png'
+            '/public/images/macro/macro3.jpg',
+            '/public/images/macro/macro2.jpg',
+            '/public/images/macro/macro1.png'
         ]
     },
     {
