@@ -552,6 +552,9 @@ const App = () => {
     if (!container || activeSection !== 'photography') return;
 
     const handleWheel = (e) => {
+        // We only want to hijack vertical scrolling (deltaY)
+        // If the user has a touchpad and scrolls horizontally (deltaX), let nature take its course.
+        // We preventDefault ONLY if we are manually scrolling.
         if (e.deltaY !== 0) {
             e.preventDefault();
             container.scrollLeft += e.deltaY;
@@ -626,7 +629,7 @@ const App = () => {
 
         {/* Mobile Menu */}
         {isMobileMenuOpen && (
-             <div className="md:hidden absolute w-full bg-white border-b px-6 py-4 flex flex-col gap-4 shadow-lg">
+              <div className="md:hidden absolute w-full bg-white border-b px-6 py-4 flex flex-col gap-4 shadow-lg">
                 <button onClick={() => handleNavClick('home')} className="text-left font-medium text-gray-600 py-2">Home</button>
                 <button onClick={() => handleNavClick('engineering')} className="text-left font-medium text-gray-600 py-2">Engineering</button>
                 <button onClick={() => handleNavClick('photography')} className="text-left font-medium text-gray-600 py-2">Photography</button>
@@ -783,7 +786,8 @@ const App = () => {
                 {/* Horizontal Scroll Container */}
                 <div 
                     ref={scrollContainerRef}
-                    className="flex h-full w-full overflow-x-auto overflow-y-hidden snap-x snap-mandatory scroll-smooth items-center px-8"
+                    // IMPORTANT: removed 'scroll-smooth' because it fights with manual JS scrolling
+                    className="flex h-full w-full overflow-x-auto overflow-y-hidden snap-x snap-proximity items-center px-8"
                     style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }} // Hide scrollbar
                 >
                     {photographyTrips.map((trip) => (
