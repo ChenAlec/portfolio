@@ -478,9 +478,10 @@ const photographyTrips = [
             { src: '/images/photography/wCoast/w15.jpg', alt: 'West Coast' },
             { src: '/images/photography/wCoast/w16.jpg', alt: 'West Coast' },
             { src: '/images/photography/wCoast/w17.jpg', alt: 'West Coast' },
+            { src: '/images/photography/wCoast/w18.jpg', alt: 'West Coast' },
             { src: '/images/photography/wCoast/w19.jpg', alt: 'West Coast' },
             { src: '/images/photography/wCoast/w20.jpg', alt: 'West Coast' },
-            { src: '/images/photography/wCoast/w21.jpg', alt: 'West Coast' }
+            { src: '/images/photography/wCoast/w21.jpg', alt: 'West Coast' },
         ]
     },
     {
@@ -555,12 +556,31 @@ const App = () => {
       if (scrollContainer) {
           const element = scrollContainer.querySelector(`[data-trip-id="${tripId}"]`);
           if (element) {
-              element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              element.scrollIntoView({ behavior: 'smooth', inline: 'start' });
           }
       }
   };
 
-  // Effect to update Active Dot on scroll (Vertical)
+  // Effect to handle scroll wheel mapping (Vertical -> Horizontal)
+  useEffect(() => {
+    if (!scrollContainer || activeSection !== 'photography') return;
+
+    const handleWheel = (e) => {
+        // We only want to hijack vertical scrolling (deltaY)
+        // If the user has a touchpad and scrolls horizontally (deltaX), let nature take its course.
+        if (e.deltaY !== 0) {
+            e.preventDefault();
+            // Multiplier increased from 2.5 to 4 for faster sensitivity
+            scrollContainer.scrollLeft += e.deltaY * 4;
+        }
+    };
+
+    // Passive: false is required to prevent default scrolling
+    scrollContainer.addEventListener('wheel', handleWheel, { passive: false });
+    return () => scrollContainer.removeEventListener('wheel', handleWheel);
+  }, [scrollContainer, activeSection]);
+
+  // Effect to update Active Dot on scroll
   useEffect(() => {
     if (!scrollContainer || activeSection !== 'photography') return;
 
@@ -569,11 +589,9 @@ const App = () => {
         
         tripGroups.forEach(group => {
             const rect = group.getBoundingClientRect();
-            const containerRect = scrollContainer.getBoundingClientRect();
-
-            // Logic: if the top of the group is reasonably close to the top of the container
-            // or if it's taking up the majority of the view
-            if (rect.top < containerRect.height / 2 && rect.bottom > 0) {
+            // Check if the group is roughly in the center or visible part of screen
+            // Logic: if the left edge is within the first half of the screen
+            if (rect.left >= 0 && rect.left < window.innerWidth / 2) {
                 const tripId = group.getAttribute('data-trip-id');
                 setActiveTripId(tripId);
             }
@@ -746,10 +764,10 @@ const App = () => {
 
         {/* SECTION: PHOTOGRAPHY */}
         {activeSection === 'photography' && (
-            <div className="h-[calc(100vh-4rem)] bg-white relative overflow-hidden flex">
+            <div className="h-[calc(100vh-4rem)] bg-white relative overflow-hidden">
                 
-                {/* Fixed Dynamic Header - Left Side */}
-                <div className="absolute top-8 left-24 z-40 pointer-events-none md:fixed md:top-24 md:left-24">
+                {/* Dynamic Header - Top Left */}
+                <div className="absolute top-8 left-24 z-40 pointer-events-none">
                     <h2 className="text-4xl font-bold text-gray-900 tracking-tight transition-all duration-500">
                         {activeTrip.location}
                     </h2>
@@ -760,7 +778,7 @@ const App = () => {
                 </div>
 
                 {/* Fixed Left Dot Navigation */}
-                <div className="fixed left-0 top-1/2 -translate-y-1/2 z-50 flex flex-col justify-center items-center gap-4 w-16">
+                <div className="fixed left-0 top-1/2 -translate-y-1/2 z-50 flex flex-col justify-center items-center gap-4 w-16 opacity-0 hover:opacity-100 transition-opacity duration-300">
                     {photographyTrips.map((trip) => (
                         <div key={trip.id} className="group relative flex items-center">
                             {/* Label on Hover */}
@@ -778,42 +796,50 @@ const App = () => {
                     ))}
                 </div>
 
-                {/* Vertical Scroll Container */}
+                {/* Horizontal Scroll Container */}
                 <div 
                     ref={scrollContainerRef}
-                    className="h-full w-full overflow-y-auto overflow-x-hidden px-8 pb-24 scroll-smooth"
+                    // REMOVED: snap-x, snap-proximity to prevent jumping
+                    // ADDED: !scroll-smooth to ensure JS scroll override works instantly
+                    className="flex h-full w-full overflow-x-auto overflow-y-hidden items-center px-8 !scroll-smooth"
+                    style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }} 
                 >
-                    {/* Spacer for Fixed Header */}
-                    <div className="h-32 md:h-16"></div>
-
                     {photographyTrips.map((trip) => (
-                        <div key={trip.id} data-trip-id={trip.id} className="mb-32 pt-16 md:pl-24">
-                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                {trip.photos.map((photo, index) => (
-                                    <div 
-                                        key={index} 
-                                        className="w-full aspect-[2/3] lg:aspect-[3/4] relative group rounded-sm overflow-hidden bg-gray-100 cursor-pointer"
-                                        onClick={() => setSelectedPhoto(photo)}
-                                    >
-                                        <img 
-                                            src={resolvePath(photo.src)} 
-                                            alt={photo.alt}
-                                            className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
-                                            onError={(e) => {
-                                                e.target.style.display = 'none'; 
-                                                e.target.nextSibling.style.display = 'flex'; 
-                                            }}
-                                        />
-                                        {/* Placeholder if image fails */}
-                                        <div className="hidden absolute inset-0 bg-gray-100 flex-col items-center justify-center text-gray-300 p-8 text-center">
-                                            <ImageIcon size={48} className="mb-4" />
-                                            <span className="text-sm font-mono break-all">{photo.src}</span>
-                                        </div>
+                        <div key={trip.id} className="flex flex-nowrap gap-4 h-[70vh] items-center flex-shrink-0 mr-24" data-trip-id={trip.id}>
+                            {trip.photos.map((photo, index) => (
+                                <div 
+                                    key={index} 
+                                    // REMOVED: snap-center to allow free scrolling
+                                    className="h-full aspect-[2/3] md:aspect-[3/4] lg:aspect-auto min-w-[30vw] relative group rounded-sm overflow-hidden bg-gray-100 cursor-pointer"
+                                    onClick={() => setSelectedPhoto(photo)}
+                                >
+                                    <img 
+                                        src={resolvePath(photo.src)} 
+                                        alt={photo.alt}
+                                        className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                                        onError={(e) => {
+                                            e.target.style.display = 'none'; 
+                                            e.target.nextSibling.style.display = 'flex'; 
+                                        }}
+                                    />
+                                    {/* Placeholder if image fails */}
+                                    <div className="hidden absolute inset-0 bg-gray-100 flex-col items-center justify-center text-gray-300 p-8 text-center">
+                                        <ImageIcon size={48} className="mb-4" />
+                                        <span className="text-sm font-mono break-all">{photo.src}</span>
                                     </div>
-                                ))}
-                             </div>
+                                </div>
+                            ))}
                         </div>
                     ))}
+                    
+                    {/* Padding for end of scroll */}
+                    <div className="w-[20vw] flex-shrink-0"></div>
+                </div>
+                
+                {/* Scroll Hint */}
+                <div className="absolute bottom-8 right-8 z-30 animate-pulse text-gray-400 flex items-center gap-2">
+                    <span className="text-xs uppercase tracking-widest">Scroll</span>
+                    <ChevronRight className="w-5 h-5" />
                 </div>
 
                 {/* Lightbox Overlay */}
