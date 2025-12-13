@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Github, Linkedin, Mail, FileText, Box, Cpu, PenTool, X, ChevronRight, Menu, ArrowLeft, ExternalLink, Check, Camera, Image as ImageIcon, PlayCircle, Film } from 'lucide-react';
+import { Github, Linkedin, Mail, FileText, Box, Cpu, PenTool, X, ChevronRight, Menu, ArrowLeft, ExternalLink, Check, Camera, Image as ImageIcon, PlayCircle, Film, Maximize2, MapPin, Calendar } from 'lucide-react';
 
 /**
  * UTILITY: Helper to resolve image paths for GitHub Pages
@@ -12,7 +12,6 @@ const resolvePath = (path) => {
 
 /**
  * UTILITY: Helper to convert standard YouTube links to Embed links
- * Allows user to paste "https://www.youtube.com/watch?v=..." directly
  */
 const getYouTubeEmbedUrl = (url) => {
     if (!url) return undefined;
@@ -362,7 +361,7 @@ const projects = [
         images: ['/images/hair-dryer-1.jpg', '/images/hair-dryer-2.jpg', '/images/hair-dryer-3.jpg']
     },
 
-    // --- OTHER PROJECTS (CREATIVE / VIDEO) ---
+    // --- OTHER PROJECTS (CREATIVE / VIDEO) ---    
     {
         id: 'stop-motion',
         category: 'Other',
@@ -382,7 +381,7 @@ const projects = [
         ],
         tags: ['Animation', 'Photography', 'Storytelling'],
         icon: <Film className="w-6 h-6" />,
-        video: 'https://www.youtube.com/watch?v=example', // Paste your standard YouTube link here
+        video: '', 
         images: [] 
     },
     {
@@ -404,7 +403,7 @@ const projects = [
         ],
         tags: ['Filmmaking', 'Directing', 'Editing'],
         icon: <Film className="w-6 h-6" />,
-        video: 'https://www.youtube.com/watch?v=5S_dVFsq-CY&t=1s', // Paste your standard YouTube link here
+        video: '', 
         images: [] 
     },
     {
@@ -426,7 +425,7 @@ const projects = [
         ],
         tags: ['Blender', '3D Animation', 'Rendering'],
         icon: <Box className="w-6 h-6" />,
-        video: 'https://www.youtube.com/watch?v=example', // Paste your standard YouTube link here
+        video: '', 
         images: [] 
     },
     {
@@ -454,29 +453,70 @@ const projects = [
 ];
 
 /**
- * DATA: Photography Placeholder
+ * DATA: Photography Trips
  */
-const photos = [
-    { id: 1, src: '/images/photo/1.jpg', alt: 'Photography Shot 1', caption: 'Urban Exploration' },
-    { id: 2, src: '/images/photo/2.jpg', alt: 'Photography Shot 2', caption: 'Nature' },
-    { id: 3, src: '/images/photo/3.jpg', alt: 'Photography Shot 3', caption: 'Architecture' },
-    { id: 4, src: '/images/photo/4.jpg', alt: 'Photography Shot 4', caption: 'Portrait' },
-    { id: 5, src: '/images/photo/5.jpg', alt: 'Photography Shot 5', caption: 'Night Life' },
-    { id: 6, src: '/images/photo/6.jpg', alt: 'Photography Shot 6', caption: 'Street' },
+const photographyTrips = [
+    {
+        id: 'west-coast',
+        location: 'West Coast, US',
+        date: 'August 2025',
+        photos: [
+            { src: '/images/photography/wCoast/w1.jpg', alt: 'West Coast' },
+            { src: '/images/photography/wCoast/w2.jpg', alt: 'West Coast' },
+            { src: '/images/photography/wCoast/w3.jpg', alt: 'West Coast' },
+            { src: '/images/photography/wCoast/w4.jpg', alt: 'West Coast' },
+            { src: '/images/photography/wCoast/w5.jpg', alt: 'West Coast' },
+            { src: '/images/photography/wCoast/w6.jpg', alt: 'West Coast' },
+            { src: '/images/photography/wCoast/w7.jpg', alt: 'West Coast' },
+            { src: '/images/photography/wCoast/w8.jpg', alt: 'West Coast' },
+            { src: '/images/photography/wCoast/w9.jpg', alt: 'West Coast' },
+            { src: '/images/photography/wCoast/w10.jpg', alt: 'West Coast' },
+            { src: '/images/photography/wCoast/w11.jpg', alt: 'West Coast' },
+            { src: '/images/photography/wCoast/w12.jpg', alt: 'West Coast' },
+            { src: '/images/photography/wCoast/w13.jpg', alt: 'West Coast' },
+            { src: '/images/photography/wCoast/w14.jpg', alt: 'West Coast' },
+            { src: '/images/photography/wCoast/w15.jpg', alt: 'West Coast' }
+        ]
+    },
+    {
+        id: 'niagara',
+        location: 'Niagara, Canada',
+        date: 'May 2025',
+        photos: [
+            // Add your photos here
+            { src: '/images/photography/niagara/n1.jpg', alt: 'Niagara' },
+            { src: '/images/photography/niagara/n2.jpg', alt: 'Niagara' },
+            { src: '/images/photography/niagara/n3.jpg', alt: 'Niagara' },
+            { src: '/images/photography/niagara/n4.jpg', alt: 'Niagara' },
+            { src: '/images/photography/niagara/n5.jpg', alt: 'Niagara' },
+            { src: '/images/photography/niagara/n6.jpg', alt: 'Niagara' },
+            { src: '/images/photography/niagara/n7.jpg', alt: 'Niagara' }
+        ]
+    }
+    // Add more trips here...
 ];
 
 const App = () => {
   const [activeSection, setActiveSection] = useState('home');
   const [selectedProject, setSelectedProject] = useState(null); 
+  const [selectedPhoto, setSelectedPhoto] = useState(null); 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [emailCopied, setEmailCopied] = useState(false);
+  
+  // Photography Section State
+  const scrollContainerRef = useRef(null);
+  const [activeTripId, setActiveTripId] = useState(photographyTrips[0]?.id);
 
   const engineeringProjects = projects.filter(p => p.category === 'Engineering');
   const otherProjects = projects.filter(p => p.category === 'Other');
 
+  // Derive the current trip object for the header
+  const activeTrip = photographyTrips.find(t => t.id === activeTripId) || photographyTrips[0];
+
   const handleNavClick = (section) => {
     setActiveSection(section);
     setSelectedProject(null); 
+    setSelectedPhoto(null);
     setIsMobileMenuOpen(false);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -497,6 +537,55 @@ const App = () => {
     document.body.removeChild(textArea);
   };
 
+  // Scroll to a specific trip
+  const scrollToTrip = (tripId) => {
+      const container = scrollContainerRef.current;
+      const element = container?.querySelector(`[data-trip-id="${tripId}"]`);
+      if (element) {
+          element.scrollIntoView({ behavior: 'smooth', inline: 'start' });
+      }
+  };
+
+  // Effect to handle scroll wheel mapping (Vertical -> Horizontal)
+  useEffect(() => {
+    const container = scrollContainerRef.current;
+    if (!container || activeSection !== 'photography') return;
+
+    const handleWheel = (e) => {
+        if (e.deltaY !== 0) {
+            e.preventDefault();
+            container.scrollLeft += e.deltaY;
+        }
+    };
+
+    container.addEventListener('wheel', handleWheel, { passive: false });
+    return () => container.removeEventListener('wheel', handleWheel);
+  }, [activeSection]);
+
+  // Effect to update Active Dot on scroll
+  useEffect(() => {
+    const container = scrollContainerRef.current;
+    if (!container || activeSection !== 'photography') return;
+
+    const handleScroll = () => {
+        const tripGroups = container.querySelectorAll('[data-trip-id]');
+        
+        tripGroups.forEach(group => {
+            const rect = group.getBoundingClientRect();
+            // Check if the group is roughly in the center or visible part of screen
+            // Logic: if the left edge is within the first half of the screen OR
+            // if the group takes up most of the screen
+            if (rect.left >= 0 && rect.left < window.innerWidth / 2) {
+                const tripId = group.getAttribute('data-trip-id');
+                setActiveTripId(tripId);
+            }
+        });
+    };
+
+    container.addEventListener('scroll', handleScroll);
+    return () => container.removeEventListener('scroll', handleScroll);
+  }, [activeSection]);
+
   const NavLink = ({ to, label }) => (
     <button 
         onClick={() => handleNavClick(to)}
@@ -507,10 +596,10 @@ const App = () => {
   );
 
   return (
-    <div className="min-h-screen bg-white font-sans text-gray-900 selection:bg-blue-100 selection:text-blue-900">
+    <div className="min-h-screen bg-white font-sans text-gray-900 selection:bg-blue-100 selection:text-blue-900 overflow-hidden flex flex-col">
       
       {/* Navigation */}
-      <nav className="fixed top-0 w-full bg-white/80 backdrop-blur-md z-50 border-b border-gray-100">
+      <nav className="fixed top-0 w-full bg-white/90 backdrop-blur-md z-50 border-b border-gray-100">
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
           <div 
             className="font-bold text-xl tracking-tight flex items-center gap-2 cursor-pointer"
@@ -548,7 +637,7 @@ const App = () => {
       </nav>
 
       {/* Main Content Router */}
-      <main className="pt-16">
+      <main className={`flex-grow pt-16 ${activeSection === 'photography' ? 'h-screen overflow-hidden' : 'overflow-y-auto'}`}>
         
         {/* SECTION: HOME */}
         {activeSection === 'home' && (
@@ -657,47 +746,108 @@ const App = () => {
             </div>
         )}
 
-        {/* SECTION: PHOTOGRAPHY */}
+        {/* SECTION: PHOTOGRAPHY (UPDATED: Dot Navigation + Dynamic Header) */}
         {activeSection === 'photography' && (
-            <div className="min-h-screen bg-white">
-                <div className="max-w-6xl mx-auto px-6 py-12">
-                    <div className="mb-12 border-b border-gray-100 pb-6 flex justify-between items-end">
-                        <div>
-                            <h1 className="text-4xl font-bold mb-2">Photography</h1>
-                            <p className="text-gray-500">A collection of moments and perspectives.</p>
-                        </div>
-                        <Camera className="text-gray-300 w-8 h-8" />
-                    </div>
-                    
-                    {/* Masonry-like Grid for Photos */}
-                    <div className="columns-1 md:columns-2 lg:columns-3 gap-4 space-y-4">
-                        {photos.map((photo) => (
-                            <div key={photo.id} className="break-inside-avoid group relative rounded-xl overflow-hidden bg-gray-100">
-                                <img 
-                                    src={resolvePath(photo.src)} 
-                                    alt={photo.alt}
-                                    className="w-full h-auto object-cover transition-transform duration-700 group-hover:scale-105"
-                                    onError={(e) => {
-                                        e.target.style.display = 'none'; 
-                                        e.target.nextSibling.style.display = 'flex'; // Show placeholder
-                                    }}
-                                />
-                                {/* Placeholder if image fails */}
-                                <div className="hidden absolute inset-0 bg-gray-100 flex-col items-center justify-center text-gray-300 p-8 text-center min-h-[200px]">
-                                    <ImageIcon size={32} className="mb-2" />
-                                    <span className="text-sm">Image Placeholder<br/>{photo.src}</span>
-                                </div>
-                                
-                                {/* Hover Overlay */}
-                                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300 flex items-end p-4 opacity-0 group-hover:opacity-100">
-                                    <p className="text-white font-medium text-sm backdrop-blur-sm px-3 py-1 rounded-full bg-black/30">
-                                        {photo.caption}
-                                    </p>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
+            <div className="h-[calc(100vh-4rem)] bg-white relative overflow-hidden">
+                
+                {/* Dynamic Header - Top Left */}
+                <div className="absolute top-8 left-24 z-40 pointer-events-none">
+                    <h2 className="text-4xl font-bold text-gray-900 tracking-tight transition-all duration-500">
+                        {activeTrip.location}
+                    </h2>
+                    <p className="text-xl text-gray-500 font-light flex items-center gap-2 mt-1 transition-all duration-500">
+                        <Calendar size={18} />
+                        {activeTrip.date}
+                    </p>
                 </div>
+
+                {/* Fixed Left Dot Navigation */}
+                <div className="fixed left-0 top-1/2 -translate-y-1/2 z-50 flex flex-col justify-center items-center gap-4 w-16 opacity-0 hover:opacity-100 transition-opacity duration-300">
+                    {photographyTrips.map((trip) => (
+                        <div key={trip.id} className="group relative flex items-center">
+                            {/* Label on Hover */}
+                            <span className="absolute left-full ml-3 bg-gray-900 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+                                {trip.location}
+                            </span>
+                            
+                            {/* Dot Button */}
+                            <button 
+                                onClick={() => scrollToTrip(trip.id)}
+                                className={`w-3 h-3 rounded-full transition-all duration-300 ${activeTripId === trip.id ? 'bg-gray-900 scale-125' : 'bg-gray-300 hover:bg-gray-500'}`}
+                                aria-label={`Scroll to ${trip.location}`}
+                            />
+                        </div>
+                    ))}
+                </div>
+
+                {/* Horizontal Scroll Container */}
+                <div 
+                    ref={scrollContainerRef}
+                    className="flex h-full w-full overflow-x-auto overflow-y-hidden snap-x snap-mandatory scroll-smooth items-center px-8"
+                    style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }} // Hide scrollbar
+                >
+                    {photographyTrips.map((trip) => (
+                        <div key={trip.id} className="flex flex-nowrap gap-4 h-[70vh] items-center flex-shrink-0 mr-24" data-trip-id={trip.id}>
+                            {trip.photos.map((photo, index) => (
+                                <div 
+                                    key={index} 
+                                    className="h-full aspect-[2/3] md:aspect-[3/4] lg:aspect-auto min-w-[30vw] relative group snap-center rounded-sm overflow-hidden bg-gray-100 cursor-pointer"
+                                    onClick={() => setSelectedPhoto(photo)}
+                                >
+                                    <img 
+                                        src={resolvePath(photo.src)} 
+                                        alt={photo.alt}
+                                        className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                                        onError={(e) => {
+                                            e.target.style.display = 'none'; 
+                                            e.target.nextSibling.style.display = 'flex'; // Show placeholder
+                                        }}
+                                    />
+                                    {/* Placeholder if image fails */}
+                                    <div className="hidden absolute inset-0 bg-gray-100 flex-col items-center justify-center text-gray-300 p-8 text-center">
+                                        <ImageIcon size={48} className="mb-4" />
+                                        <span className="text-sm font-mono break-all">{photo.src}</span>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    ))}
+                    
+                    {/* Padding for end of scroll */}
+                    <div className="w-[20vw] flex-shrink-0"></div>
+                </div>
+                
+                {/* Scroll Hint */}
+                <div className="absolute bottom-8 right-8 z-30 animate-pulse text-gray-400 flex items-center gap-2">
+                    <span className="text-xs uppercase tracking-widest">Scroll</span>
+                    <ChevronRight className="w-5 h-5" />
+                </div>
+
+                {/* Lightbox Overlay */}
+                {selectedPhoto && (
+                    <div 
+                        className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center p-4 animate-in fade-in duration-200"
+                        onClick={() => setSelectedPhoto(null)}
+                    >
+                        <button 
+                            onClick={() => setSelectedPhoto(null)}
+                            className="absolute top-6 right-6 text-white/70 hover:text-white transition-colors"
+                        >
+                            <X size={32} />
+                        </button>
+                        
+                        <div className="max-w-7xl max-h-[90vh] relative" onClick={(e) => e.stopPropagation()}>
+                            <img 
+                                src={resolvePath(selectedPhoto.src)} 
+                                alt={selectedPhoto.alt}
+                                className="max-w-full max-h-[85vh] object-contain rounded shadow-2xl"
+                            />
+                            <p className="text-white/80 text-center mt-4 font-medium tracking-wide">
+                                {selectedPhoto.caption}
+                            </p>
+                        </div>
+                    </div>
+                )}
             </div>
         )}
 
@@ -731,9 +881,11 @@ const App = () => {
 
       </main>
 
-      <footer className="py-8 border-t border-gray-100 bg-gray-50 text-center text-gray-500 text-sm">
-        <p>&copy; {new Date().getFullYear()} Alec Chen. Designed & Built with React & Three.js.</p>
-      </footer>
+      {activeSection !== 'photography' && (
+          <footer className="py-8 border-t border-gray-100 bg-gray-50 text-center text-gray-500 text-sm">
+            <p>&copy; {new Date().getFullYear()} Alec Chen. Designed & Built with React & Three.js.</p>
+          </footer>
+      )}
 
     </div>
   );
