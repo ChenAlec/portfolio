@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Github, Linkedin, Mail, FileText, Box, Cpu, PenTool, X, ChevronRight, Menu, ArrowLeft, ExternalLink, Check, Camera, Image as ImageIcon, PlayCircle, Film, Maximize2, MapPin, Calendar } from 'lucide-react';
 
 /**
@@ -504,8 +504,16 @@ const App = () => {
   const [emailCopied, setEmailCopied] = useState(false);
   
   // Photography Section State
-  const scrollContainerRef = useRef(null);
   const [activeTripId, setActiveTripId] = useState(photographyTrips[0]?.id);
+  
+  // Ref Callback Pattern: This ensures we capture the DOM node exactly when it mounts
+  // This is more robust than useRef + useEffect for conditionally rendered elements
+  const [scrollContainer, setScrollContainer] = useState(null);
+  const scrollContainerRef = useCallback(node => {
+      if (node !== null) {
+          setScrollContainer(node);
+      }
+  }, []);
 
   const engineeringProjects = projects.filter(p => p.category === 'Engineering');
   const otherProjects = projects.filter(p => p.category === 'Other');
@@ -539,45 +547,44 @@ const App = () => {
 
   // Scroll to a specific trip
   const scrollToTrip = (tripId) => {
-      const container = scrollContainerRef.current;
-      const element = container?.querySelector(`[data-trip-id="${tripId}"]`);
-      if (element) {
-          element.scrollIntoView({ behavior: 'smooth', inline: 'start' });
+      if (scrollContainer) {
+          const element = scrollContainer.querySelector(`[data-trip-id="${tripId}"]`);
+          if (element) {
+              element.scrollIntoView({ behavior: 'smooth', inline: 'start' });
+          }
       }
   };
 
   // Effect to handle scroll wheel mapping (Vertical -> Horizontal)
   useEffect(() => {
-    const container = scrollContainerRef.current;
-    if (!container || activeSection !== 'photography') return;
+    if (!scrollContainer || activeSection !== 'photography') return;
 
     const handleWheel = (e) => {
         // We only want to hijack vertical scrolling (deltaY)
         // If the user has a touchpad and scrolls horizontally (deltaX), let nature take its course.
-        // We preventDefault ONLY if we are manually scrolling.
         if (e.deltaY !== 0) {
             e.preventDefault();
-            container.scrollLeft += e.deltaY;
+            // Multiplier added for faster scrolling (2.5x speed)
+            scrollContainer.scrollLeft += e.deltaY * 2.5;
         }
     };
 
-    container.addEventListener('wheel', handleWheel, { passive: false });
-    return () => container.removeEventListener('wheel', handleWheel);
-  }, [activeSection]);
+    // Passive: false is required to prevent default scrolling
+    scrollContainer.addEventListener('wheel', handleWheel, { passive: false });
+    return () => scrollContainer.removeEventListener('wheel', handleWheel);
+  }, [scrollContainer, activeSection]);
 
   // Effect to update Active Dot on scroll
   useEffect(() => {
-    const container = scrollContainerRef.current;
-    if (!container || activeSection !== 'photography') return;
+    if (!scrollContainer || activeSection !== 'photography') return;
 
     const handleScroll = () => {
-        const tripGroups = container.querySelectorAll('[data-trip-id]');
+        const tripGroups = scrollContainer.querySelectorAll('[data-trip-id]');
         
         tripGroups.forEach(group => {
             const rect = group.getBoundingClientRect();
             // Check if the group is roughly in the center or visible part of screen
-            // Logic: if the left edge is within the first half of the screen OR
-            // if the group takes up most of the screen
+            // Logic: if the left edge is within the first half of the screen
             if (rect.left >= 0 && rect.left < window.innerWidth / 2) {
                 const tripId = group.getAttribute('data-trip-id');
                 setActiveTripId(tripId);
@@ -585,9 +592,9 @@ const App = () => {
         });
     };
 
-    container.addEventListener('scroll', handleScroll);
-    return () => container.removeEventListener('scroll', handleScroll);
-  }, [activeSection]);
+    scrollContainer.addEventListener('scroll', handleScroll);
+    return () => scrollContainer.removeEventListener('scroll', handleScroll);
+  }, [scrollContainer, activeSection]);
 
   const NavLink = ({ to, label }) => (
     <button 
@@ -786,7 +793,7 @@ const App = () => {
                 {/* Horizontal Scroll Container */}
                 <div 
                     ref={scrollContainerRef}
-                    // IMPORTANT: removed 'scroll-smooth' because it fights with manual JS scrolling
+                    // Snap proximity is used here, but event listeners manually push scrollLeft
                     className="flex h-full w-full overflow-x-auto overflow-y-hidden snap-x snap-proximity items-center px-8"
                     style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }} // Hide scrollbar
                 >
