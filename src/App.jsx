@@ -564,8 +564,8 @@ const App = () => {
         // If the user has a touchpad and scrolls horizontally (deltaX), let nature take its course.
         if (e.deltaY !== 0) {
             e.preventDefault();
-            // Multiplier added for faster scrolling (2.5x speed)
-            scrollContainer.scrollLeft += e.deltaY * 2.5;
+            // Multiplier increased from 2.5 to 4 for faster sensitivity
+            scrollContainer.scrollLeft += e.deltaY * 4;
         }
     };
 
@@ -756,7 +756,7 @@ const App = () => {
             </div>
         )}
 
-        {/* SECTION: PHOTOGRAPHY (UPDATED: Dot Navigation + Dynamic Header) */}
+        {/* SECTION: PHOTOGRAPHY */}
         {activeSection === 'photography' && (
             <div className="h-[calc(100vh-4rem)] bg-white relative overflow-hidden">
                 
@@ -793,16 +793,18 @@ const App = () => {
                 {/* Horizontal Scroll Container */}
                 <div 
                     ref={scrollContainerRef}
-                    // Snap proximity is used here, but event listeners manually push scrollLeft
-                    className="flex h-full w-full overflow-x-auto overflow-y-hidden snap-x snap-proximity items-center px-8"
-                    style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }} // Hide scrollbar
+                    // REMOVED: snap-x, snap-proximity to prevent jumping
+                    // ADDED: !scroll-smooth to ensure JS scroll override works instantly
+                    className="flex h-full w-full overflow-x-auto overflow-y-hidden items-center px-8 !scroll-smooth"
+                    style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }} 
                 >
                     {photographyTrips.map((trip) => (
                         <div key={trip.id} className="flex flex-nowrap gap-4 h-[70vh] items-center flex-shrink-0 mr-24" data-trip-id={trip.id}>
                             {trip.photos.map((photo, index) => (
                                 <div 
                                     key={index} 
-                                    className="h-full aspect-[2/3] md:aspect-[3/4] lg:aspect-auto min-w-[30vw] relative group snap-center rounded-sm overflow-hidden bg-gray-100 cursor-pointer"
+                                    // REMOVED: snap-center to allow free scrolling
+                                    className="h-full aspect-[2/3] md:aspect-[3/4] lg:aspect-auto min-w-[30vw] relative group rounded-sm overflow-hidden bg-gray-100 cursor-pointer"
                                     onClick={() => setSelectedPhoto(photo)}
                                 >
                                     <img 
@@ -811,7 +813,7 @@ const App = () => {
                                         className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
                                         onError={(e) => {
                                             e.target.style.display = 'none'; 
-                                            e.target.nextSibling.style.display = 'flex'; // Show placeholder
+                                            e.target.nextSibling.style.display = 'flex'; 
                                         }}
                                     />
                                     {/* Placeholder if image fails */}
@@ -1038,7 +1040,7 @@ const ProjectDetail = ({ project, onBack }) => (
             <div className="max-w-3xl mx-auto space-y-16">
                 <div className="space-y-4">
                     <h3 className="text-xl font-bold text-gray-900">What?</h3>
-                     <ul className="list-disc list-outside ml-4 space-y-2 text-lg text-gray-600 leading-relaxed">
+                      <ul className="list-disc list-outside ml-4 space-y-2 text-lg text-gray-600 leading-relaxed">
                         {project.what.map((point, index) => (
                             <li key={index}>{point}</li>
                         ))}
@@ -1046,7 +1048,7 @@ const ProjectDetail = ({ project, onBack }) => (
                 </div>
                 <div className="space-y-4">
                     <h3 className="text-xl font-bold text-gray-900">How?</h3>
-                     <ul className="list-disc list-outside ml-4 space-y-2 text-lg text-gray-600 leading-relaxed">
+                      <ul className="list-disc list-outside ml-4 space-y-2 text-lg text-gray-600 leading-relaxed">
                         {project.how.map((point, index) => (
                             <li key={index}>{point}</li>
                         ))}
@@ -1054,8 +1056,8 @@ const ProjectDetail = ({ project, onBack }) => (
                 </div>
                 <div className="space-y-4">
                     <h3 className="text-xl font-bold text-gray-900">Outcome</h3>
-                     <div className="bg-gray-50 p-6 rounded-xl border border-gray-100">
-                         <ul className="list-disc list-outside ml-4 space-y-2 text-gray-800 leading-relaxed font-medium">
+                      <div className="bg-gray-50 p-6 rounded-xl border border-gray-100">
+                          <ul className="list-disc list-outside ml-4 space-y-2 text-gray-800 leading-relaxed font-medium">
                             {project.outcome.map((point, index) => (
                                 <li key={index}>{point}</li>
                             ))}
