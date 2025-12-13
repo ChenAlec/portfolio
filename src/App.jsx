@@ -475,7 +475,12 @@ const photographyTrips = [
             { src: '/images/photography/wCoast/w12.jpg', alt: 'West Coast' },
             { src: '/images/photography/wCoast/w13.jpg', alt: 'West Coast' },
             { src: '/images/photography/wCoast/w14.jpg', alt: 'West Coast' },
-            { src: '/images/photography/wCoast/w15.jpg', alt: 'West Coast' }
+            { src: '/images/photography/wCoast/w15.jpg', alt: 'West Coast' },
+            { src: '/images/photography/wCoast/w16.jpg', alt: 'West Coast' },
+            { src: '/images/photography/wCoast/w17.jpg', alt: 'West Coast' },
+            { src: '/images/photography/wCoast/w19.jpg', alt: 'West Coast' },
+            { src: '/images/photography/wCoast/w20.jpg', alt: 'West Coast' },
+            { src: '/images/photography/wCoast/w21.jpg', alt: 'West Coast' }
         ]
     },
     {
