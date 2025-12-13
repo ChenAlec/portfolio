@@ -555,23 +555,85 @@ const App = () => {
       }
   };
 
-  // Effect to handle scroll wheel mapping (Vertical -> Horizontal)
+  // Effect to handle smooth horizontal scrolling (Inertia/Momentum)
   useEffect(() => {
     if (!scrollContainer || activeSection !== 'photography') return;
 
+    // State tracks the physics of the scroll
+    const state = {
+      isScrolling: false,
+      target: scrollContainer.scrollLeft, // Where we want to be
+      current: scrollContainer.scrollLeft, // Where we actually are
+      rafId: null // Animation frame ID
+    };
+
+    // Linear Interpolation function (Lerp)
+    // Moves 'start' towards 'end' by 'factor' (0-1)
+    const lerp = (start, end, factor) => start + (end - start) * factor;
+
+    const animate = () => {
+      // 1. Move current towards target smoothly
+      // 0.08 is the 'smoothness' factor. Lower = heavier/slower, Higher = snappier
+      state.current = lerp(state.current, state.target, 0.08); 
+      
+      // 2. Apply to DOM
+      if (scrollContainer) {
+        scrollContainer.scrollLeft = state.current;
+      }
+
+      // 3. Continue animation loop if we haven't reached the target
+      // Using 0.5px as a "close enough" threshold
+      if (Math.abs(state.target - state.current) > 0.5) {
+        state.rafId = requestAnimationFrame(animate);
+      } else {
+        // Stop animation
+        state.isScrolling = false;
+        state.current = state.target; // Snap to exact target to prevent micro-drifts
+      }
+    };
+
     const handleWheel = (e) => {
-        // We only want to hijack vertical scrolling (deltaY)
-        // If the user has a touchpad and scrolls horizontally (deltaX), let nature take its course.
-        if (e.deltaY !== 0) {
+        // Only hijack vertical scrolling if it's the dominant axis
+        // This allows horizontal trackpad swipes to work natively
+        if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
             e.preventDefault();
-            // Multiplier increased from 2.5 to 4 for faster sensitivity
-            scrollContainer.scrollLeft += e.deltaY * 4;
+            
+            // Add delta to target
+            // Multiplier controls speed/distance per scroll tick
+            const speed = 2.5; 
+            state.target += e.deltaY * speed;
+
+            // Clamp target to prevent scrolling past limits
+            const maxScroll = scrollContainer.scrollWidth - scrollContainer.clientWidth;
+            state.target = Math.max(0, Math.min(state.target, maxScroll));
+
+            // Start animation loop if not already running
+            if (!state.isScrolling) {
+              state.isScrolling = true;
+              // Sync current position in case user manually dragged scrollbar recently
+              state.current = scrollContainer.scrollLeft; 
+              state.rafId = requestAnimationFrame(animate);
+            }
         }
     };
 
-    // Passive: false is required to prevent default scrolling
+    // Listener for manual scroll interactions (dragging scrollbar)
+    // We update our internal state so the next wheel event starts from the correct position
+    const handleScroll = () => {
+        if (!state.isScrolling) {
+            state.current = scrollContainer.scrollLeft;
+            state.target = scrollContainer.scrollLeft;
+        }
+    };
+
     scrollContainer.addEventListener('wheel', handleWheel, { passive: false });
-    return () => scrollContainer.removeEventListener('wheel', handleWheel);
+    scrollContainer.addEventListener('scroll', handleScroll, { passive: true });
+
+    return () => {
+      scrollContainer.removeEventListener('wheel', handleWheel);
+      scrollContainer.removeEventListener('scroll', handleScroll);
+      if (state.rafId) cancelAnimationFrame(state.rafId);
+    };
   }, [scrollContainer, activeSection]);
 
   // Effect to update Active Dot on scroll
@@ -793,17 +855,15 @@ const App = () => {
                 {/* Horizontal Scroll Container */}
                 <div 
                     ref={scrollContainerRef}
-                    // REMOVED: snap-x, snap-proximity to prevent jumping
+                    // REMOVED: Style hiding scrollbar so "horizontal bar" is visible
                     // ADDED: !scroll-smooth to ensure JS scroll override works instantly
-                    className="flex h-full w-full overflow-x-auto overflow-y-hidden items-center px-8 !scroll-smooth"
-                    style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }} 
+                    className="flex h-full w-full overflow-x-auto overflow-y-hidden items-center px-8 !scroll-smooth pb-4" // Added pb-4 for scrollbar space
                 >
                     {photographyTrips.map((trip) => (
                         <div key={trip.id} className="flex flex-nowrap gap-4 h-[70vh] items-center flex-shrink-0 mr-24" data-trip-id={trip.id}>
                             {trip.photos.map((photo, index) => (
                                 <div 
                                     key={index} 
-                                    // REMOVED: snap-center to allow free scrolling
                                     className="h-full aspect-[2/3] md:aspect-[3/4] lg:aspect-auto min-w-[30vw] relative group rounded-sm overflow-hidden bg-gray-100 cursor-pointer"
                                     onClick={() => setSelectedPhoto(photo)}
                                 >
@@ -831,7 +891,7 @@ const App = () => {
                 </div>
                 
                 {/* Scroll Hint */}
-                <div className="absolute bottom-8 right-8 z-30 animate-pulse text-gray-400 flex items-center gap-2">
+                <div className="absolute bottom-16 right-8 z-30 animate-pulse text-gray-400 flex items-center gap-2">
                     <span className="text-xs uppercase tracking-widest">Scroll</span>
                     <ChevronRight className="w-5 h-5" />
                 </div>
